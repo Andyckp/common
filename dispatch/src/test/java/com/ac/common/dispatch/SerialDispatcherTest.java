@@ -39,7 +39,7 @@ public class SerialDispatcherTest {
         CompletableFuture<?> f2 = new CompletableFuture<>();
         Executors.newSingleThreadExecutor().execute(() -> {
             for (int i = 0; i < 100; i++) {
-                serialDispatcher1.dispatch(new StringMessage("b" + String.valueOf(i)));
+                serialDispatcher2.dispatch(new StringMessage("b" + String.valueOf(i)));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
