@@ -50,8 +50,9 @@ public class SerialDispatcher {
     }
 
     public void dispatch(Message msg) {
-        queue.offer(msg);
-        tryExecute();
+        if (queue.offer(msg)) {
+            tryExecute();
+        }
     }
 
     private void tryExecute() {
