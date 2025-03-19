@@ -24,8 +24,13 @@ public class SerialDispatcher {
         @Override
         public void run() {
             state.set(State.EXECUTING);
-            listener.onMessage(pollable);
+            listener.onMessage(pollable, callBackRunnable);
+        }
+    };
 
+    private final Runnable callBackRunnable = new Runnable() {
+        @Override
+        public void run() {
             if (config.waitTimeInMillis > 0) {
                 state.set(SLEEPING);
                 scheduledExecutor.schedule(postExecutionRunnable, config.waitTimeInMillis, MILLISECONDS);
@@ -76,7 +81,7 @@ public class SerialDispatcher {
     }
 
     public interface MessageListener {
-        void onMessage(Pollable pollable);
+        void onMessage(Pollable pollable, Runnable callBackRunnable);
     }
 
     public interface Pollable {
