@@ -1,49 +1,52 @@
 package com.ac.common.dispatch;
 
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.ac.common.dispatch.SerialDispatcher.State.*;
+import static com.ac.common.dispatch.SerialDispatcher.State.NOT_QUEUED;
+import static com.ac.common.dispatch.SerialDispatcher.State.QUEUED;
+import static com.ac.common.dispatch.SerialDispatcher.State.SLEEPING;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SerialDispatcher {
-    public interface Message {}
-    public interface Pollable {
-        Message poll();
-    }
-    public interface MessageListener {
-        void onMessage(Pollable pollable);
-    }
-
-    public static class Config {
-        private final long waitTimeInMillis;
-
-        public Config(long waitTimeInMillis) {
-            this.waitTimeInMillis = waitTimeInMillis;
-        }
-    }
-
-    enum State {
-        NOT_QUEUED,
-        QUEUED,
-        EXECUTING,
-        SLEEPING,
-    }
-
-    private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>(1000);
-    private final Pollable pollable = () -> queue.poll();
-
+    private final BlockingQueue<Message> queue;
+    private final Pollable pollable;
     private final Config config;
     private final Executor executor;
     private final ScheduledExecutorService scheduledExecutor;
     private final AtomicReference<State> state = new AtomicReference<>(NOT_QUEUED);
     private final MessageListener listener;
 
+    private final Runnable executionRunnable = new Runnable() {
+        @Override
+        public void run() {
+            state.set(State.EXECUTING);
+            listener.onMessage(pollable);
+
+            if (config.waitTimeInMillis > 0) {
+                state.set(SLEEPING);
+                scheduledExecutor.schedule(postExecutionRunnable, config.waitTimeInMillis, MILLISECONDS);
+            } else {
+                postExecutionRunnable.run();
+            }
+        }
+    };
+
+    private final Runnable postExecutionRunnable = () -> {
+        state.set(NOT_QUEUED);
+        tryExecute();
+    };
+
     public SerialDispatcher(Config config, Executor executor, ScheduledExecutorService scheduledExecutor, MessageListener listener) {
         this.config = config;
         this.executor = executor;
         this.scheduledExecutor = scheduledExecutor;
         this.listener = listener;
+        this.queue = new LinkedBlockingQueue<>(config.initialMessageQueueSize);
+        this.pollable = queue::poll;
     }
 
     public void dispatch(Message msg) {
@@ -61,23 +64,31 @@ public class SerialDispatcher {
         executor.execute(executionRunnable);
     }
 
-    private final Runnable executionRunnable = new Runnable() {
-        @Override
-        public void run() {
-            state.set(State.EXECUTING);
-            listener.onMessage(pollable);
+    enum State {
+        NOT_QUEUED,
+        QUEUED,
+        EXECUTING,
+        SLEEPING,
+    }
 
-            if (config.waitTimeInMillis > 0) {
-                state.set(SLEEPING);
-                scheduledExecutor.schedule(tryExecute, config.waitTimeInMillis, MILLISECONDS);
-            } else {
-                tryExecute.run();
-            }
+    public interface Message {
+    }
+
+    public interface MessageListener {
+        void onMessage(Pollable pollable);
+    }
+
+    public interface Pollable {
+        Message poll();
+    }
+
+    public static class Config {
+        private final int initialMessageQueueSize;
+        private final long waitTimeInMillis;
+
+        public Config(int initialMessageQueueSize, long waitTimeInMillis) {
+            this.initialMessageQueueSize = initialMessageQueueSize;
+            this.waitTimeInMillis = waitTimeInMillis;
         }
-    };
-
-    private final Runnable tryExecute = () -> {
-        state.set(NOT_QUEUED);
-        tryExecute();
-    };
+    }
 }

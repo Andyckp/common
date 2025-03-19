@@ -6,23 +6,21 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class SerialDispatcherTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SerialDispatcherTest.class);
 
     @Test
     public void test() throws InterruptedException {
-        SerialDispatcher serialDispatcher = new SerialDispatcher(new SerialDispatcher.Config(10000),
+        SerialDispatcher serialDispatcher = new SerialDispatcher(new SerialDispatcher.Config(1000, 10000),
             Executors.newSingleThreadExecutor(),
             Executors.newSingleThreadScheduledExecutor(),
-                pollable -> {
-                    SerialDispatcher.Message msg;
-                    while ((msg = pollable.poll()) != null) {
-                        logger.info("msg={}", msg);
-                    }
+            pollable -> {
+                SerialDispatcher.Message msg;
+                while ((msg = pollable.poll()) != null) {
+                    logger.info("msg={}", msg);
                 }
+            }
         );
 
         for (int i = 0; i < 10; i++) {
@@ -42,8 +40,8 @@ public class SerialDispatcherTest {
         @Override
         public String toString() {
             return "StringMessage{" +
-                    "msg='" + msg + '\'' +
-                    '}';
+                "msg='" + msg + '\'' +
+                '}';
         }
     }
 }
