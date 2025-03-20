@@ -1,6 +1,7 @@
-package com.ac.subscribable;
+package subscribable;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -19,28 +20,35 @@ public class SubscribeableCache<K, V> implements Subscribeable<K, V>, MessageLis
         this.executor = executor;
     }
 
-    public void subscribe(MessageListener<K, V> listener) {
+    public void subscribe(MessageListener<K, V> listener, ControlListener controlListener) {
+        Objects.nonNull(listener);
         listeners.add(listener);
         if (executor == null) {
-            sendSnapshot(listener);
+            sendSnapshot(listener, controlListener);
         } else {
             executor.execute(() -> {
-                sendSnapshot(listener);
+                sendSnapshot(listener, controlListener);
             });
         }
     }
 
-    private void sendSnapshot(MessageListener<K, V> listener) {
+    private void sendSnapshot(MessageListener<K, V> listener, ControlListener controlListener) {
         for (Map.Entry<K, Message<K, V>> e : cache.entrySet()) {
             listener.onMessage(e.getValue());
+        }
+
+        if (controlListener != null) {
+            controlListener.onSnapshotEnd();
         }
     }
 
     public void unsubscribe(MessageListener<K, V> listener) {
+        Objects.nonNull(listener);
         listeners.remove(listener);
     }
 
     public void onMessage(Message<K, V> message) {
+        cache.put(message.getKey(), message);
         if (executor == null) {
             sendMessage(message);
         } else {

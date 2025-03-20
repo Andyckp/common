@@ -1,4 +1,4 @@
-package com.ac.subscribable;
+package subscribable;
 
 public interface Message<K, V> {
     K getKey();
