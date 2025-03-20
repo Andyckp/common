@@ -1,6 +1,6 @@
-package subscribable;
+package com.ac.common.subscribeable;
 
-public interface Subscribeable<K, V> {
+public interface Subscribable<K, V> {
     void subscribe(MessageListener<K, V> listener, ControlListener controlListener);
     void unsubscribe(MessageListener<K, V> listener);
 }

@@ -8,8 +8,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class SerialDispatcherTest {
 
@@ -18,15 +19,15 @@ public class SerialDispatcherTest {
     @Test
     public void test() throws InterruptedException, ExecutionException {
 
-        Executor executor = Executors.newSingleThreadExecutor();
+        Executor executor = newSingleThreadExecutor();
         ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         SerialDispatcher serialDispatcher1 = build(executor, scheduledExecutor);
         SerialDispatcher serialDispatcher2 = build(executor, scheduledExecutor);
 
         CompletableFuture<?> f1 = new CompletableFuture<>();
-        Executors.newSingleThreadExecutor().execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             for (int i = 0; i < 100; i++) {
-                serialDispatcher1.dispatch(new StringMessage("a" + String.valueOf(i)));
+                serialDispatcher1.dispatch(new StringMessage("a" + i));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -37,9 +38,9 @@ public class SerialDispatcherTest {
         });
 
         CompletableFuture<?> f2 = new CompletableFuture<>();
-        Executors.newSingleThreadExecutor().execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             for (int i = 0; i < 100; i++) {
-                serialDispatcher2.dispatch(new StringMessage("b" + String.valueOf(i)));
+                serialDispatcher2.dispatch(new StringMessage("b" + i));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

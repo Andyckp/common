@@ -1,4 +1,4 @@
-package subscribable;
+package com.ac.common;
 
 import java.util.Objects;
 
