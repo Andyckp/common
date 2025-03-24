@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" package="com.example.sbe" id="2" semanticVersion="1.0.0">
+    <types>
+        <composite name="decimal" description="Decimal type">
+            <type name="mantissa" primitiveType="int64" description="Mantissa"/>
+            <type name="exponent" primitiveType="int8" description="Exponent"/>
+        </composite>
+    </types>
+    <message name="Position" id="1">
+        <field name="instrumentId" type="char[16]" description="Instrument Identifier"/>
+        <field name="portfolioId" type="char[16]" description="Portfolio Identifier"/>
+        <field name="notional" type="decimal" description="Total Notional Value"/>
+        <field name="quantity" type="decimal" description="Total Quantity"/>
+        <field name="createTs" type="int64" description="Timestamp indicating when the position was created"/>
+    </message>
+</sbe:messageSchema>

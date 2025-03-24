@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" package="com.example.sbe" id="1" semanticVersion="1.0.0">
+    <types>
+        <composite name="decimal" description="Decimal type">
+            <type name="mantissa" primitiveType="int64" description="Mantissa"/>
+            <type name="exponent" primitiveType="int8" description="Exponent"/>
+        </composite>
+        <enum name="Side" encodingType="uint8" semanticType="char">
+            <validValue name="BUY" value="0"/>
+            <validValue name="SELL" value="1"/>
+        </enum>
+    </types>
+    <message name="Trade" id="1">
+        <field name="tradeId" type="char[16]" description="Trade Identifier"/>
+        <field name="instrumentId" type="char[16]" description="Instrument Identifier"/>
+        <field name="marketId" type="int32" description="Market Identifier"/>
+        <field name="portfolioId" type="char[16]" description="Portfolio Identifier"/>
+        <field name="side" type="Side" description="Trade Side"/>
+        <field name="price" type="decimal" description="Trade Price"/>
+        <field name="quantity" type="decimal" description="Trade Quantity"/>
+        <field name="createTs" type="int64" description="Timestamp indicating when the trade was created"/>
+        <field name="isDelete" type="uint8" description="Indicates if the trade is deleted (1=true, 0=false)"/>
+    </message>
+</sbe:messageSchema>
