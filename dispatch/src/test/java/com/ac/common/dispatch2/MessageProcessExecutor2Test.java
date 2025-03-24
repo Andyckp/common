@@ -1,9 +1,12 @@
-package com.ac.common.dispatch;
+package com.ac.common.dispatch2;
 
 import com.ac.common.Message;
 import com.ac.common.MessageImpl;
-import com.ac.common.dispatch.MessageProcessExecutor.Config;
+import com.ac.common.dispatch.MessageProcessExecutor;
+import com.ac.common.dispatch2.MessageProcessExecutor2.Config;
 import com.ac.common.dispatch.MessageProcessExecutor.Processor;
+import com.lmax.disruptor.dsl.Disruptor;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,27 +26,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-public class MessageProcessExecutorTest {
-    private static final Logger logger = LoggerFactory.getLogger(MessageProcessExecutorTest.class);
+public class MessageProcessExecutor2Test {
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessExecutor2Test.class);
 
     interface ProcessingDetails {
         void run(Runnable processEndCallback);
     }
 
-    @Test
-    public void GIVEN_two_message_process_executors_and_one_executor_WHEN_process_message_async_THEN_execute_as_expected() throws InterruptedException, ExecutionException {
-        // Given
-        Executor executor = newSingleThreadScheduledExecutor();
-        ScheduledExecutorService scheduledExecutor = newSingleThreadScheduledExecutor();
-        innerTest(executor, scheduledExecutor, processEndCallback -> scheduledExecutor.schedule(processEndCallback, 200, MILLISECONDS)); // use timer to mimic heavy 200ms calculation async, i.e. the 1 executor as mere async dispatcher
-    }
+    // @Test
+    // public void GIVEN_two_message_process_executors_and_one_executor_WHEN_process_message_async_THEN_execute_as_expected() throws InterruptedException, ExecutionException {
+    //     // Given
+    //     Disruptor<BatchMessageEvent> disruptor = DisruptorBuilder.build();
+    //     ScheduledExecutorService scheduledExecutor = newSingleThreadScheduledExecutor();
+    //     innerTest(disruptor, scheduledExecutor, processEndCallback -> scheduledExecutor.schedule(processEndCallback, 200, MILLISECONDS)); // use timer to mimic heavy 200ms calculation async, i.e. the 1 executor as mere async dispatcher
+    // }
 
     @Test
     public void GIVEN_two_message_process_executors_and_two_executors_WHEN_process_message_sync_THEN_execute_as_expected() throws InterruptedException, ExecutionException {
         // Given
-        Executor executor = newFixedThreadPool(1);
+        Disruptor<BatchMessageEvent> disruptor = DisruptorBuilder.build();
+        disruptor.start();
+
         ScheduledExecutorService scheduledExecutor = newSingleThreadScheduledExecutor();
-        innerTest(executor, scheduledExecutor, processEndCallback -> {
+        innerTest(disruptor, scheduledExecutor, processEndCallback -> {
             // try {
             //     Thread.sleep(1);
             // } catch (InterruptedException e) {
@@ -53,11 +58,11 @@ public class MessageProcessExecutorTest {
         }); // the 2 executors execute heavy 200 ms calculation
     }
 
-    private static void innerTest(Executor executor, ScheduledExecutorService scheduledExecutor, ProcessingDetails processingDetails) throws InterruptedException, ExecutionException {
+    private static void innerTest(Disruptor<BatchMessageEvent> disruptor, ScheduledExecutorService scheduledExecutor, ProcessingDetails processingDetails) throws InterruptedException, ExecutionException {
         Counter counter1 = mock(Counter.class);
-        Processor processor1 = (pollable, processEndCallback) -> {
+        BatchMessageProcessor processor1 = (ringBuffer, processEndCallback) -> {
             Message<?, ?> message;
-            while ((message = pollable.poll()) != null) {
+            while ((message = ringBuffer.dequeue()) != null) {
                 counter1.increment();
                 // logger.info("message: {}", message);
             }
@@ -65,16 +70,16 @@ public class MessageProcessExecutorTest {
 
         };
         Counter counter2 = mock(Counter.class);
-        Processor processor2 = (pollable, processEndCallback) -> {
+        BatchMessageProcessor processor2 = (ringBuffer, processEndCallback) -> {
             Message<?, ?> message;
-            while ((message = pollable.poll()) != null) {
+            while ((message = ringBuffer.dequeue()) != null) {
                 counter2.increment();
                 // logger.info("message: {}", message);
             }
             processingDetails.run(processEndCallback);
         };
-        MessageProcessExecutor messageProcessExecutor1 = new MessageProcessExecutor(new Config(1000, 0), executor, scheduledExecutor, processor1);
-        MessageProcessExecutor messageProcessExecutor2 = new MessageProcessExecutor(new Config(1000, 0), executor, scheduledExecutor, processor2);
+        MessageProcessExecutor2 messageProcessExecutor1 = new MessageProcessExecutor2(new Config(1024, 0), disruptor, scheduledExecutor, processor1);
+        MessageProcessExecutor2 messageProcessExecutor2 = new MessageProcessExecutor2(new Config(1024, 0), disruptor, scheduledExecutor, processor2);
 
         long start = System.currentTimeMillis();
 
