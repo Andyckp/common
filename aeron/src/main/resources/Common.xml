@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <composite name="messageHeader" description="Message identifiers and length of message root.">
+        <type name="blockLength" primitiveType="uint16"/>
+        <type name="templateId" primitiveType="uint16"/>
+        <type name="schemaId" primitiveType="uint16"/>
+        <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="int64_8" description="Decimal type">
+        <type name="mantissa" primitiveType="int64"/>
+        <type name="exponent" primitiveType="int8"/>
+    </composite>
+    <type name="char16" primitiveType="char" length="16"/>
+</types>

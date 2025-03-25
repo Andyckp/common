@@ -1,16 +1,25 @@
-<?xml version="1.0"?>
-<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" package="com.example.sbe" id="2" semanticVersion="1.0.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" xmlns:xi="http://www.w3.org/2001/XInclude" package="com.ac.common.sbe" id="1" semanticVersion="1.0.0">
     <types>
-        <composite name="decimal" description="Decimal type">
+        <composite name="messageHeader" description="Message Header">
+            <type name="blockLength" primitiveType="uint16" description="Block Length"/>
+            <type name="templateId" primitiveType="uint16" description="Template ID"/>
+            <type name="schemaId" primitiveType="uint16" description="Schema ID"/>
+            <type name="version" primitiveType="uint16" description="Version"/>
+        </composite>
+        <composite name="int64_8" description="Decimal type">
             <type name="mantissa" primitiveType="int64" description="Mantissa"/>
             <type name="exponent" primitiveType="int8" description="Exponent"/>
         </composite>
+        <type name="char16" primitiveType="char" length="16" description="Char array of length 16"/>
     </types>
-    <message name="Position" id="1">
-        <field name="instrumentId" type="char[16]" description="Instrument Identifier"/>
-        <field name="portfolioId" type="char[16]" description="Portfolio Identifier"/>
-        <field name="notional" type="decimal" description="Total Notional Value"/>
-        <field name="quantity" type="decimal" description="Total Quantity"/>
-        <field name="createTs" type="int64" description="Timestamp indicating when the position was created"/>
+    <!-- <xi:include href="Common.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> -->
+    <message name="Position" id="1" description="Position Message">
+        <field name="messageHeader" id="0" type="messageHeader" description="Standard Message Header"/>
+        <field name="instrumentId" id="1" type="char16" description="Instrument Identifier"/>
+        <field name="portfolioId" id="2" type="char16" description="Portfolio Identifier"/>
+        <field name="notional" id="3" type="int64_8" description="Total Notional Value"/>
+        <field name="quantity" id="4" type="int64_8" description="Total Quantity"/>
+        <field name="createTs" id="5" type="int64" description="Timestamp indicating when the position was created"/>
     </message>
 </sbe:messageSchema>

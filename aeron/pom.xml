@@ -55,30 +55,82 @@
             <artifactId>agrona</artifactId>
             <version>1.23.0</version> 
         </dependency>
+        <dependency>
+    <groupId>org.junit.platform</groupId>
+    <artifactId>junit-platform-console-standalone</artifactId>
+    <version>1.10.0</version>
+    <scope>test</scope>
+</dependency>
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>uk.co.real-logic</groupId>
-                <artifactId>sbe-tool</artifactId>
-                <version>1.34.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemas>
-                                <schema>src/main/resources/position.xml</schema>
-                            </schemas>
-                            <outputDir>target/generated-sources/sbe</outputDir>
-                            <packageName>com.ac.common.sbe</packageName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <plugins>
+        <!-- <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>./target/generated-sources/java/</directory>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includeProjectDependencies>false</includeProjectDependencies>
+          <includePluginDependencies>true</includePluginDependencies>
+          <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
+          <systemProperties>
+            <systemProperty>
+              <key>sbe.output.dir</key>
+              <value>./target/generated-sources/java</value>
+            </systemProperty>
+          </systemProperties>
+          <arguments>
+            <argument>./src/main/resources/Trade.xml</argument>
+          </arguments>
+          <workingDirectory>./target/generated-sources/java</workingDirectory>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>sbe-tool</artifactId>
+            <version>${sbe.tool.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>./target/generated-sources/java/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> -->
+    </plugins>
+  </build>
 </project>
