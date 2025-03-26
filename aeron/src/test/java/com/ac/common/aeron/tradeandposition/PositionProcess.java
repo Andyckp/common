@@ -1,6 +1,7 @@
 package com.ac.common.aeron.tradeandposition;
 
 import com.lmax.disruptor.dsl.Disruptor;
+import org.agrona.collections.Object2ObjectHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ public class PositionProcess {
     private static final Logger logger = LoggerFactory.getLogger(PositionProcess.class);
 
     private Disruptor<PositionEvent> positionDisruptor;
-    private final Map<String, Position> positions = new ConcurrentHashMap<>(); // TODO better data structure?
+    private final Map<String, Position> positions = new Object2ObjectHashMap<>(); // TODO better data structure?
 
     public PositionProcess(Disruptor<PositionEvent> positionDisruptor, Disruptor<TradeEvent> tradeDisruptor) {
         this.positionDisruptor = positionDisruptor;
