@@ -6,13 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PositionProcess {
     private static final Logger logger = LoggerFactory.getLogger(PositionProcess.class);
 
-    private Disruptor<PositionEvent> positionDisruptor;
-    private final Map<String, Position> positions = new Object2ObjectHashMap<>(); // TODO better data structure?
+    private final Disruptor<PositionEvent> positionDisruptor;
+    private final Map<String, Position> positions = new Object2ObjectHashMap<>();
 
     public PositionProcess(Disruptor<PositionEvent> positionDisruptor, Disruptor<TradeEvent> tradeDisruptor) {
         this.positionDisruptor = positionDisruptor;
