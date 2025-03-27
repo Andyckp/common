@@ -48,13 +48,13 @@ public class PositionProcessTest {
 
         for (int i = 0; i < 5; i++) {
             tradeEncoder.wrap(buffer, 0)
-                    .tradeId(tradeIds[i])
-                    .instrumentId(instrumentIds[i])
-                    .marketId(marketIds[i])
-                    .portfolioId(portfolioIds[i])
-                    .side(sides[i])
-                    .createTs(System.currentTimeMillis())
-                    .isDelete((short) 0);
+                .tradeId(tradeIds[i])
+                .instrumentId(instrumentIds[i])
+                .marketId(marketIds[i])
+                .portfolioId(portfolioIds[i])
+                .side(sides[i])
+                .createTs(System.currentTimeMillis())
+                .isDelete((short) 0);
             tradeEncoder.quantity().mantissa(1000*i+i+1).exponent((byte) 2);
             tradeEncoder.price().mantissa(1000*i+i+1).exponent((byte) 2);
 
