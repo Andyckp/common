@@ -52,9 +52,14 @@ public class PositionProcessApplication {
             idleStrategy.idle();
         }
 
-        for (int i = 0; i < 5; i++) {
-            logger.info("Waiting for trade events...");
+        while (true) {
             final int fragments = subscription.poll(this::archiveReader, 1);
+            logger.info("Waiting for trade events...");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             idleStrategy.idle(fragments);
         }
     }

@@ -13,7 +13,7 @@ public class PositionProcessIT {
     private ArchivingMediaDriver mediaDriver;
 
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
         // set up
         setup();
 
@@ -23,8 +23,12 @@ public class PositionProcessIT {
         TradeTestPublisher tradeTestPublisher = new TradeTestPublisher();
 
         // read and write
-        tradeTestPublisher.write();
-        app.read();
+        new Thread(tradeTestPublisher::write).start();
+        Thread.sleep(2000);
+
+        new Thread(app::read).start();
+
+        Thread.sleep(10000);
 
         // clean up
         tradeTestPublisher.cleanUp();

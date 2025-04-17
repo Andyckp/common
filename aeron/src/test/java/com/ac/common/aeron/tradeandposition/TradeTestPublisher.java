@@ -35,6 +35,10 @@ public class TradeTestPublisher {
     private static final String[] portfolioIds = {"PORT123", "PORT124", "PORT125", "PORT126", "PORT127"};
     private static final byte[] sides = {(byte) 'B', (byte) 'S', (byte) 'B', (byte) 'S', (byte) 'B'};
 
+    private final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(TradeEncoder.BLOCK_LENGTH);
+    private final UnsafeBuffer buffer = new UnsafeBuffer(byteBuffer);
+    private final TradeEncoder tradeEncoder = new TradeEncoder();
+
     public TradeTestPublisher() {
         this.aeron = Aeron.connect();
         this.aeronArchive = AeronArchive.connect(
@@ -46,47 +50,51 @@ public class TradeTestPublisher {
     }
 
     public void write() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(TradeEncoder.BLOCK_LENGTH);
-        UnsafeBuffer buffer = new UnsafeBuffer(byteBuffer);
-        TradeEncoder tradeEncoder = new TradeEncoder();
-
         aeronArchive.startRecording(channel, streamCapture, SourceLocation.LOCAL);
         try (ExclusivePublication publication = aeron.addExclusivePublication(channel, streamCapture)) {
             while (!publication.isConnected()) {
                 idleStrategy.idle();
             }
 
-            for (int i = 0; i < 5; i++) {
+            int i = 0;
+            while (true) {
                 tradeEncoder.wrap(buffer, 0)
-                    .tradeId(tradeIds[i])
-                    .instrumentId(instrumentIds[i])
-                    .marketId(marketIds[i])
-                    .portfolioId(portfolioIds[i])
-                    .side(sides[i])
+                    .tradeId(tradeIds[i/5])
+                    .instrumentId(instrumentIds[i/5])
+                    .marketId(marketIds[i/5])
+                    .portfolioId(portfolioIds[i/5])
+                    .side(sides[i/5])
                     .createTs(System.currentTimeMillis())
                     .isDelete((short) 0);
                 tradeEncoder.quantity().mantissa(1000 * i + i + 1).exponent((byte) 2);
                 tradeEncoder.price().mantissa(1000 * i + i + 1).exponent((byte) 2);
+
+                logger.info("Sending {}", tradeEncoder);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
                 while (publication.offer(buffer, 0, TradeEncoder.BLOCK_LENGTH) < 0) {
                     idleStrategy.idle();
                 }
             }
 
-            final long stopPosition = publication.position();
-            logger.info("stop position={}", stopPosition);
-            final CountersReader countersReader = aeron.countersReader();
-            int counterId = RecordingPos.findCounterIdBySession(countersReader, publication.sessionId());
-            while (CountersReader.NULL_COUNTER_ID == counterId) {
-                idleStrategy.idle();
-                counterId = RecordingPos.findCounterIdBySession(countersReader, publication.sessionId());
-            }
-
-            long counterValue;
-            while ((counterValue = countersReader.getCounterValue(counterId)) < stopPosition) {
-                logger.info("counter value={}, stop position={}", counterValue, stopPosition);
-                idleStrategy.idle();
-            }
+//            final long stopPosition = publication.position();
+//            logger.info("stop position={}", stopPosition);
+//            final CountersReader countersReader = aeron.countersReader();
+//            int counterId = RecordingPos.findCounterIdBySession(countersReader, publication.sessionId());
+//            while (CountersReader.NULL_COUNTER_ID == counterId) {
+//                idleStrategy.idle();
+//                counterId = RecordingPos.findCounterIdBySession(countersReader, publication.sessionId());
+//            }
+//
+//            long counterValue;
+//            while ((counterValue = countersReader.getCounterValue(counterId)) < stopPosition) {
+//                logger.info("counter value={}, stop position={}", counterValue, stopPosition);
+//                idleStrategy.idle();
+//            }
         }
     }
 
