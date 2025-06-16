@@ -1,21 +1,25 @@
-# Common Java Libraries (Experimental)  
+# Common Java Libraries  
 
 ## Overview  
-`common` is a collection of **reusable Java libraries**, currently in an **experimental stage**, designed for **high-performance applications**. It explores **high-throughput** and **low-latency** techniques, focusing on efficient data processing and concurrency.  
+The `common` project is designed to **explore, learn, and build** a collection of **reusable Java libraries**. It focuses on **subscribable caches**, **high-throughput and low-latency multithreading patterns**, and **Aeron transport with SBE codec**.  
 
-## Key Experimental Features  
-- **Subscribable Cache** – A data-driven integration mechanism for composable sub-systems.  
-- **Dispatch System** – A flexible threading model optimized for high-throughput execution.  
-- **Threading Model** – Supports parallel and serial execution strategies for efficient workload distribution.  
-
-**Note:** This project is still **experimental** and subject to changes
+## Key Components  
+- **Subscribable Cache** – A key-value map that supports subscriptions, enabling easy composition of modular systems. This component is **stable** and captures learned best practices.  
+- **High-Throughput Threading** – A multithreading toolset focused on **data partitioning**. This component is **stable** and captures learned best practices.  
+- **Low-Latency Threading** – A threading toolset optimized for **low garbage collection (GC)**. This component is **experimental** and explores new possibilities.  
+- **Aeron Transport & SBE Codec** – Investigates the use of **Aeron** for high-performance transport and **SBE** for efficient binary encoding.  
 
 ---
+
 # Subscribable Cache  
 
 ## Overview  
-The **Subscribable Cache** is a **data-driven integration mechanism** designed to facilitate **composable sub-systems** within an application. It serves as a **communication interface** for both **cross-application** and **cross-module** interactions.  
-See https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/subscribeable
+The **Subscribable Cache** serves as a **unified communication interface** for both **cross-application** and **cross-module interactions within an application**, enabling easy composition of standardized processing models.  
+
+## Processing Flow  
+Message System / Database → Cache → Processor → Cache → Processor → ... → Cache → Message System / Database
+
+This **cyclic data flow** ensures **efficient data propagation** across different components.  
 
 ## Features  
 - **Data-Driven Design** – Enables efficient, event-driven updates.  
@@ -23,48 +27,52 @@ See https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/
 - **Cross-Application & Cross-Module Communication** – Provides a unified interface for seamless data exchange.  
 - **Connected Graph of Caches & Processors** – Forms a structured pipeline for data processing.  
 
-## Processing Flow  
-Message System / Database → Cache → Processor → Cache → Processor → ... → Cache → Message System / Database
-This **cyclic data flow** ensures **efficient data propagation** across different components.  
-
 ## Reference  
-[SubscribableCache.java](https://github.com/Andyckp/common/blob/master/dispatch/src/main/java/com/ac/common/subscribeable/SubscribableCache.java)
+[SubscribableCache.java](https://github.com/Andyckp/common/blob/master/dispatch/src/main/java/com/ac/common/subscribeable/SubscribableCache.java)  
+[Subscribable Cache Repository](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/subscribeable)  
 
 ---
-# Dispatch   
+
+# High-Throughput Threading  
 
 ## Overview  
-This high-throughput threading model optimizes **message processing** by balancing **serial execution** and **parallelism** while preventing system overload.  
-See https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/dispatch. 
+This **high-throughput threading model** optimizes **message processing** by balancing **serial execution** for correctness and **parallelism** for performance.  
+The library maintains a `Map<PartitionKey, MessageProcessorExecutor>`, where all instances of `MessageProcessorExecutor` share the same **thread pool**, matching the CPU count.  
 
 ## Features  
-- **Serial Execution** – Ensures ordered processing for the same `PartitionKey`.  
-- **Parallel Execution** – Allows concurrent processing across different `PartitionKey` values.  
+- **Shared Processing Power** – All calculations are executed by the same thread pool.  
+- **Serial Execution** – Ensures ordered processing for the same `PartitionKey` to maintain correctness.  
+- **Parallel Execution** – Allows concurrent processing across different `PartitionKey` values for improved performance.  
 - **Conflation** – Merges redundant messages to reduce workload.  
-- **Grace Period** – Prevents flooding by introducing controlled delays.  
-
-## Implementation  
-- Accepts a **thread pool** (`Map<PartitionKey, MessageProcessorExecutor>`), matching CPU count.  
-- Uses **shared worker threads** for efficient resource utilization.  
-- Guarantees **serial execution** within a partition while enabling **parallel execution** across partitions.  
+- **Grace Period** – Prevents flooding and starvation by introducing controlled delays.  
 
 ## Reference  
-[MessageProcessExecutor.java](https://github.com/Andyckp/common/blob/master/dispatch/src/main/java/com/ac/common/dispatch/MessageProcessExecutor.java)
+[MessageProcessExecutor.java](https://github.com/Andyckp/common/blob/master/dispatch/src/main/java/com/ac/common/dispatch/MessageProcessExecutor.java)  
+[Dispatch Repository](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/dispatch)  
 
 ---
 
-# Dispatch 2 (Experimental)  
+# Low-Latency Threading (Experimental)  
 
 ## Overview  
-`dispatch2` is an **experimental low-latency threading model** designed to explore **high-performance concurrency techniques**. It focuses on optimizing message processing using **Disruptor** for efficient event-driven execution.  
+This component is **experimental** and explores **Disruptor** usage and **low-GC** message passing across threads.  
 
-## Key Experimental Features  
-- **Low-Latency Threading Model** – Designed for minimal overhead in concurrent processing.  
-- **Disruptor Integration** – Investigates the use of Disruptor for high-speed message passing.  
-
-## Status  
-**This project is not yet complete** and remains an **ongoing exploration** of advanced threading techniques. Further development and optimizations are planned.  
+## Features  
+- **Disruptor** – Investigates the use of Disruptor for high-speed message passing.  
+- **Low GC** – Avoids object creation during message passing to minimize garbage collection overhead.  
 
 ## Reference  
-[Disruptor Implementation](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/disruptor)  
-[Dispatch 2](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/dispatch2)  
+[Disruptor Repository](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/disruptor)  
+[Dispatch2 Repository](https://github.com/Andyckp/common/tree/master/dispatch/src/main/java/com/ac/common/dispatch2)  
+
+---
+
+# Aeron & SBE  
+
+## Overview  
+This component explores the use of **Aeron** for high-performance transport and **SBE** for efficient binary encoding.  
+
+## Reference  
+[Aeron SBE Repository](https://github.com/Andyckp/common/tree/master/aeron/src/main/java/com/ac/common/sbe)  
+[Aeron Test Repository](https://github.com/Andyckp/common/tree/master/aeron/src/test/java/com/ac/common/aeron)  
+
