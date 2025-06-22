@@ -1,0 +1,157 @@
+co-pilot
+cmd i
+
+quick fix
+cmd .
+
+trigger suggestion
+shift space
+
+trigger parameters hints
+cmd shift space, up / down to view
+
+all commands
+fn1
+
+user settings
+cmd ,
+
+---
+rename
+f2
+
+refactor`
+select codes, click light blub
+
+----
+
+Go back / forward
+ctrl -
+ctrl shift -
+
+---
+
+shortcut config window
+cmd k, cmd s
+
+zoom
+cmd +
+cmd -
+
+-------
+
+show java doc 
+cmd k, cmd i
+
+Definition
+f12
+
+References
+shift fn12
+
+Implementation
+cmd f12
+
+Call hierachy
+opt shift h
+
+
+------
+Open file
+cmd p  
+
+open symbol in current file
+cmd shift o
+
+open symbol globally
+cmd t 
+cmd p + #
+
+go to line
+shift g
+
+------
+organize imports
+shift option o                
+
+format
+shift opt f
+
+------
+reveal current file in code explorer
+cmd shift e
+
+
+---
+cut line
+cmd x
+
+move line(s)
+opt up/down
+
+copy line
+cmd c
+
+copy line(s)
+opt shift line(s)
+
+insert line
+cmd enter
+cmd shift enter
+
+delete line:
+shift + cmd + k
+
+---
+
+go to bracket (start / end back and forward)
+cmd shift \
+
+add bracket
+shift [
+
+
+---
+go to start / end of line
+cmd <- / ->
+cmd shift <- / -> (select)
+ 
+go by word
+opt <- / ->
+opt shift <- / -> (select)
+
+go to start / end of file
+cmd up / down
+cmd shift up / down (select all)
+cmd a (select all)
+
+scroll page:
+fn up / down
+fn shift up / down (select)
+
+scroll by line (w/o cursor move):
+ctrl fn up / down
+
+select line
+cmd l
+
+select word
+cmd d
+
+select all instances of current word
+cmd fn2
+
+---
+multi-cursor
+opt click
+
+multi-cursor (column selection)
+opt shift cmd up/down/left/right
+opt shift mouse-drag
+
+
+
+--- 
+
+* split display
+cmd \
