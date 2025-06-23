@@ -16,21 +16,33 @@ public class OrderEventProducer {
 
     public OrderEventProducer(RingBuffer<OrderEvent> ringBuffer) {
         this.thread = new Thread(() -> {
-            while (running) {
-            // for (long i = 0; i<11; i++) {
+            // while (running) {
+            int vol;
+            for (int i = 0; i<9999; i++) {
                 long seq = ringBuffer.next();
                 OrderEvent order = ringBuffer.get(seq);
-                order.set(
-                    // random.nextInt(1000),
+                // vol = i % 2 == 0 ? random.nextInt(9) + 1: vol;
+                vol = random.nextInt(9) + 1;
+                Side side = random.nextBoolean() ? Side.BID : Side.ASK;
+                        // seq % 2 == 0 ? Side.BID : Side.ASK;
+                order.set(// random.nextInt(1000),
                     10000,
                     // random.nextInt(5),
-                    (int) seq / 2 + 1,
+                    vol,
                     "User" + random.nextInt(9999),
-                    "Instrument" + random.nextInt(9999),
-                    // random.nextBoolean() ? Side.BID : Side.ASK
-                    seq % 2 == 0 ? Side.BID : Side.ASK
-                );
+                    "Instrument" + random.nextInt(9999), 
+                    side);
+                // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
                 ringBuffer.publish(seq);
+                // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
+                
+                // IMPORTANT, cannot remove, otherwise either bid or ask price will be zero, not sure why
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 if (seq % 1000000 == 0) {
                     logger.info("Order produce seq={}", seq);
                 }

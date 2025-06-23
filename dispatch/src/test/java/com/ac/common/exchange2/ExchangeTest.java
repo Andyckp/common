@@ -40,9 +40,9 @@ public class ExchangeTest {
 
         orderInstrumentProcessor.start();
         orderEventProducer.start();
-        instrumentEventProducer.start();
+        // instrumentEventProducer.start();
 
-        Thread.sleep(5000); 
+        Thread.sleep(10000); 
         // stats: 10s 66000000 fills, 33000000 orders, 33000000 instruments, if dummy order instrument processor is used
 
         orderInstrumentProcessor.print();
@@ -51,10 +51,16 @@ public class ExchangeTest {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             orderEventProducer.stop();
             instrumentEventProducer.stop();
+            orderInstrumentProcessor.print();
             orderInstrumentProcessor.stop();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+            }
             orderDisruptor.shutdown();
             instrumentDisruptor.shutdown();
             fillDisruptor.shutdown();
+            
         }));
     }
 }

@@ -87,8 +87,11 @@ public class OrderBook {
             Deque<OrderEvent> q = askArray[i];
             if (!q.isEmpty()) {
                 int tick = TICK_BASE + i;
-                int vol = q.stream().mapToInt(o -> o.volume).sum();
-                logger.info("{} - {}", tick / 100.0, vol);
+                for (OrderEvent o : q) {
+                    logger.info("{} - {}", tick / 100.0, o.volume);
+                }
+                // int vol = q.stream().mapToInt(o -> o.volume).sum();
+                // logger.info("{} - {}", tick / 100.0, vol);
             }
         }
 

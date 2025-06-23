@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.Sequence;
+import com.lmax.disruptor.SequenceBarrier;
 
 public class OrderInstrumentProcessor {
 
@@ -34,6 +35,8 @@ public class OrderInstrumentProcessor {
             orderRingBuffer.addGatingSequences(orderGatingSequence);
             instrumentRingBuffer.addGatingSequences(instrumentGatingSequence);
 
+            SequenceBarrier orderBarrier = orderRingBuffer.newBarrier();
+
             while (running) {
                 long orderWriteSeq = orderRingBuffer.getCursor();
                 long instrumentWriteSeq = instrumentRingBuffer.getCursor();
@@ -49,8 +52,15 @@ public class OrderInstrumentProcessor {
                 }
 
                 while (orderReadSeq <= orderWriteSeq) {
+                    // try {
+                    //     orderBarrier.waitFor(orderWriteSeq);
+                    // } catch (AlertException | InterruptedException | TimeoutException e) {
+                    //     // TODO Auto-generated catch block
+                    //     e.printStackTrace();
+                    // }
                     OrderEvent order = orderRingBuffer.get(orderReadSeq);
-                    // logger.info("Order: {}, {}, {}, {}", order.pric e, order.volume, order.side, orderReadSeq);
+                    
+                    logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, orderReadSeq);
                     if (orderReadSeq % 1000000 == 0) {
                         logger.info("Order process count={}", orderReadSeq);
                     }
@@ -88,6 +98,13 @@ public class OrderInstrumentProcessor {
 
                     instrumentSeq = instrumentGatingSequence.incrementAndGet() + 1;
                 }
+
+                // try {
+                //     Thread.sleep(1);
+                // } catch (InterruptedException e) {
+                //     // TODO Auto-generated catch block
+                //     e.printStackTrace();
+                // }
             }
         }, "order-instrument-processor");
     }
