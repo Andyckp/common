@@ -5,6 +5,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.ac.common.exchange2.Util.padOrTruncate;
 import com.lmax.disruptor.RingBuffer;
 
 public class InstrumentEventProducer {
@@ -15,12 +16,13 @@ public class InstrumentEventProducer {
 
     public InstrumentEventProducer(RingBuffer<InstrumentEvent> ringBuffer) {
         this.thread = new Thread(() -> {
-        	while (running) {
+        	// while (running) {
+        	for (int i = 0; i < 10000; i++) {
         	    long seq = ringBuffer.next();
                 InstrumentEvent instrument = ringBuffer.get(seq);
-                instrument.set("Instrument" + random.nextInt(9999), "Detail" + random.nextInt(9999));
+                instrument.set(padOrTruncate("Instrument" + random.nextInt(9999), 16), padOrTruncate("Detail" + random.nextInt(9999), 16));
                 ringBuffer.publish(seq);
-                if (seq % 1000000 == 0) {
+                if (seq % 1000 == 0) {
                     logger.info("Instrument produce count={}", seq);
                 }
         	}

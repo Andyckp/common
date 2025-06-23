@@ -12,7 +12,7 @@ public class FillEventConsumer implements EventHandler<FillEvent> {
     public void onEvent(FillEvent fill, long sequence, boolean endOfBatch) {
         // logger.info("FillEvent received: price={}, volume={}",
         //     fill.price, fill.volume);
-        if (sequence % 1000000 == 0) {
+        if (sequence % 1000 == 0) {
             logger.info("FillEvents count={}", sequence);
         }
     }

@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
-            <version>3.4.4</version> <!-- Latest release version as of now -->
+            <version>4.0.0</version> <!-- Latest release version as of now -->
         </dependency>
         <dependency>
             <groupId>org.agrona</groupId>

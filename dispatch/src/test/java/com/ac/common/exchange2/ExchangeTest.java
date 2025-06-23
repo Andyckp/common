@@ -30,9 +30,15 @@ public class ExchangeTest {
 
         FillEventConsumer fillEventConsumer = new FillEventConsumer();
         fillDisruptor.handleEventsWith(fillEventConsumer);
-        
+
         OrderEventProducer orderEventProducer = new OrderEventProducer(orderRingBuffer);
         InstrumentEventProducer instrumentEventProducer = new InstrumentEventProducer(instrumentRingBuffer);
+
+        instrumentDisruptor.handleEventsWith((instrument, sequence, endOfBatch) -> {
+            if (sequence % 1000 == 0) {
+                logger.info("Instrument consumer 2 : {}", sequence);
+            }
+        });
 
         orderDisruptor.start();
         instrumentDisruptor.start();
@@ -40,19 +46,17 @@ public class ExchangeTest {
 
         orderInstrumentProcessor.start();
         orderEventProducer.start();
-        // instrumentEventProducer.start();
+        instrumentEventProducer.start();
 
         Thread.sleep(10000); 
         // stats: 10s 66000000 fills, 33000000 orders, 33000000 instruments, if dummy order instrument processor is used
-
-        orderInstrumentProcessor.print();
 
         // Shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             orderEventProducer.stop();
             instrumentEventProducer.stop();
-            orderInstrumentProcessor.print();
             orderInstrumentProcessor.stop();
+            orderInstrumentProcessor.print();
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
@@ -60,7 +64,6 @@ public class ExchangeTest {
             orderDisruptor.shutdown();
             instrumentDisruptor.shutdown();
             fillDisruptor.shutdown();
-            
         }));
     }
 }
