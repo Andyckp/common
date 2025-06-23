@@ -15,27 +15,23 @@ public class OrderInstrumentProcessor {
     private volatile boolean running = false;
     private final Random random = new Random();
     private final Thread thread;
-    private int orderCount = 0;
-    private int instrumentCount = 0;
 
     public OrderInstrumentProcessor(RingBuffer<OrderEvent> orderRingBuffer, RingBuffer<InstrumentEvent> instrumentRingBuffer,
             RingBuffer<FillEvent> fillRingBuffer) {
         thread = new Thread(() -> {
             Sequence orderGatingSequence = new Sequence();
             Sequence instrumentGatingSequence = new Sequence();
-            long orderSequence = orderGatingSequence.get();
-            long instrumentSequence = instrumentGatingSequence.get();
+            long orderReadSeq = orderGatingSequence.get();
+            long instrumentSeq = instrumentGatingSequence.get();
 
             orderRingBuffer.addGatingSequences(orderGatingSequence);
             instrumentRingBuffer.addGatingSequences(instrumentGatingSequence);
 
             while (running) {
-                long orderWritePosition = orderRingBuffer.getCursor();
-                long instrumentWritePosition = instrumentRingBuffer.getCursor();
+                long orderWriteSeq = orderRingBuffer.getCursor();
+                long instrumentWriteSeq = instrumentRingBuffer.getCursor();
 
-                boolean hasOrder = orderWritePosition > orderSequence;
-                boolean hasInstrument = instrumentWritePosition > instrumentSequence;
-                if (!hasOrder && !hasInstrument) {
+                if (orderReadSeq >= orderWriteSeq && instrumentSeq <= instrumentWriteSeq) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(1); 
                     } catch (InterruptedException e) {
@@ -45,9 +41,11 @@ public class OrderInstrumentProcessor {
                     continue; 
                 }
 
-                if (hasOrder) {
-                    OrderEvent order = orderRingBuffer.get(orderSequence);
-                    // logger.info("Processing OrderEvent: " + order.price + ", " + order.volume);
+                while (orderReadSeq < orderWriteSeq) {
+                    OrderEvent order = orderRingBuffer.get(orderReadSeq);
+                    if (orderReadSeq % 1000000 == 0) {
+                        logger.info("Order process count={}", orderReadSeq);
+                    }
 
                     // Generate and publish a random FillEvent
                     long fillSequence = fillRingBuffer.next();
@@ -59,17 +57,15 @@ public class OrderInstrumentProcessor {
                             "User" + random.nextInt(9999)
                     );
                     fillRingBuffer.publish(fillSequence);
-                    orderCount++;
-                    if (orderCount % 1000000 == 0) {
-                        logger.info("Order process count={}", orderCount);
-                    }
 
-                    orderSequence = orderGatingSequence.incrementAndGet();
+                    orderReadSeq = orderGatingSequence.incrementAndGet();
                 }
 
-                if (hasInstrument) {
-                    InstrumentEvent instrument = instrumentRingBuffer.get(instrumentSequence);
-                    // logger.info("Processing InstrumentEvent: " + new String(instrument.instrumentId) + ", Detail: " + new String(instrument.instrumentDetail));
+                while (instrumentSeq < instrumentWriteSeq) {
+                    InstrumentEvent instrument = instrumentRingBuffer.get(instrumentSeq);
+                    if (instrumentSeq % 1000000 == 0) {
+                        logger.info("Instrument process count={}", instrumentSeq);
+                    }
 
                     // Generate and publish a random FillEvent
                     long fillSequence = fillRingBuffer.next();
@@ -81,12 +77,8 @@ public class OrderInstrumentProcessor {
                             "User" + random.nextInt(9999)
                     );
                     fillRingBuffer.publish(fillSequence);
-                    instrumentCount++;
-                    if (instrumentCount % 1000000 == 0) {
-                        logger.info("Instrument process count={}", instrumentCount);
-                    }
 
-                    instrumentSequence = instrumentGatingSequence.incrementAndGet();
+                    instrumentSeq = instrumentGatingSequence.incrementAndGet();
                 }
             }
         }, "order-instrument-processor");

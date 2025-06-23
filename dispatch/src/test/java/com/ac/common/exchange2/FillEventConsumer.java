@@ -7,16 +7,11 @@ import com.lmax.disruptor.EventHandler;
 
 public class FillEventConsumer implements EventHandler<FillEvent> {
     private static final Logger logger = LoggerFactory.getLogger(FillEventConsumer.class);
-    private int count = 0;
     
     @Override
     public void onEvent(FillEvent fill, long sequence, boolean endOfBatch) {
-        // logger.info("Consumed FillEvent: " + fill.price + ", " + fill.volume + 
-        //                    ", BidUser: " + new String(fill.bidUserId) + 
-        //                    ", AskUser: " + new String(fill.askUserId));
-        count++;
-        if (count % 1000000 == 0) {
-            logger.info("FillEvents count={}", count);
+        if (sequence % 1000000 == 0) {
+            logger.info("FillEvents count={}", sequence);
         }
     }
 }

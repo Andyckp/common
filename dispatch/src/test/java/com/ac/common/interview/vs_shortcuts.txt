@@ -20,8 +20,15 @@ cmd ,
 rename
 f2
 
-refactor`
+refactor
 select codes, click light blub
+ctrl shift r
+
+source action
+ctrl opt enter
+
+quick action
+cmd .
 
 ----
 
@@ -139,7 +146,7 @@ select word
 cmd d
 
 select all instances of current word
-cmd fn2
+cmd f2
 
 ---
 multi-cursor

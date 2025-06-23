@@ -13,30 +13,23 @@ public class OrderEventProducer {
     private final Random random = new Random();
     private volatile boolean running = false;
     private final Thread thread;
-    private int count = 0;
 
     public OrderEventProducer(RingBuffer<OrderEvent> ringBuffer) {
         this.thread = new Thread(() -> {
             while (running) {
-                long sequence = ringBuffer.next();
-                // try {
-                    OrderEvent order = ringBuffer.get(sequence);
-                    order.set(
-                            random.nextInt(1000),
-                            random.nextInt(100),
-                            "User" + random.nextInt(9999),
-                            "Instrument" + random.nextInt(9999),
-                            random.nextBoolean() ? Side.BUY : Side.SELL
-                    );
-                    ringBuffer.publish(sequence);
-                    count++;
-                    if (count % 1000000 == 0) {
-                        logger.info("Order produce count={}", count);
-                    }
-                //     Thread.sleep(1);
-                // } catch (InterruptedException e) {
-                //     Thread.currentThread().interrupt();
-                // }
+                long seq = ringBuffer.next();
+                OrderEvent order = ringBuffer.get(seq);
+                order.set(
+                    random.nextInt(1000),
+                    random.nextInt(100),
+                    "User" + random.nextInt(9999),
+                    "Instrument" + random.nextInt(9999),
+                    random.nextBoolean() ? Side.BUY : Side.SELL
+                );
+                ringBuffer.publish(seq);
+                if (seq % 1000000 == 0) {
+                    logger.info("Order produce seq={}", seq);
+                }
             }
         }, "order-producer");
     }
