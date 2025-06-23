@@ -20,21 +20,26 @@ public class OrderEventProducer {
             int vol;
             for (int i = 0; i<9999; i++) {
                 long seq = ringBuffer.next();
-                OrderEvent order = ringBuffer.get(seq);
-                // vol = i % 2 == 0 ? random.nextInt(9) + 1: vol;
-                vol = random.nextInt(9) + 1;
-                Side side = random.nextBoolean() ? Side.BID : Side.ASK;
-                        // seq % 2 == 0 ? Side.BID : Side.ASK;
-                order.set(// random.nextInt(1000),
-                    10000,
-                    // random.nextInt(5),
-                    vol,
-                    "User" + random.nextInt(9999),
-                    "Instrument" + random.nextInt(9999), 
-                    side);
-                // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
-                ringBuffer.publish(seq);
-                // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
+                try {
+                    
+                    OrderEvent order = ringBuffer.get(seq);
+                    // vol = i % 2 == 0 ? random.nextInt(9) + 1: vol;
+                    vol = random.nextInt(9) + 1;
+                    Side side = random.nextBoolean() ? Side.BID : Side.ASK;
+                            // seq % 2 == 0 ? Side.BID : Side.ASK;
+                    order.set(// random.nextInt(1000),
+                        10000,
+                        // random.nextInt(5),
+                        vol,
+                        "User" + random.nextInt(9999),
+                        "Instrument" + random.nextInt(9999), 
+                        side);
+                } catch (Exception e) {
+                } finally {
+                    // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
+                    ringBuffer.publish(seq);
+                    // logger.info("Order: {}, {}, {}, {}", order.price, order.volume, order.side, seq);
+                }
                 
                 // IMPORTANT, cannot remove, otherwise either bid or ask price will be zero, not sure why
                 try {
