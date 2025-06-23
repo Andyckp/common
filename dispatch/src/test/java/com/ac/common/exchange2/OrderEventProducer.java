@@ -17,14 +17,18 @@ public class OrderEventProducer {
     public OrderEventProducer(RingBuffer<OrderEvent> ringBuffer) {
         this.thread = new Thread(() -> {
             while (running) {
+            // for (long i = 0; i<11; i++) {
                 long seq = ringBuffer.next();
                 OrderEvent order = ringBuffer.get(seq);
                 order.set(
-                    random.nextInt(1000),
-                    random.nextInt(100),
+                    // random.nextInt(1000),
+                    10000,
+                    // random.nextInt(5),
+                    (int) seq / 2 + 1,
                     "User" + random.nextInt(9999),
                     "Instrument" + random.nextInt(9999),
-                    random.nextBoolean() ? Side.BUY : Side.SELL
+                    // random.nextBoolean() ? Side.BID : Side.ASK
+                    seq % 2 == 0 ? Side.BID : Side.ASK
                 );
                 ringBuffer.publish(seq);
                 if (seq % 1000000 == 0) {

@@ -15,14 +15,21 @@ public class OrderInstrumentProcessor {
     private volatile boolean running = false;
     private final Random random = new Random();
     private final Thread thread;
+    private final OrderBook orderBook;
 
     public OrderInstrumentProcessor(RingBuffer<OrderEvent> orderRingBuffer, RingBuffer<InstrumentEvent> instrumentRingBuffer,
             RingBuffer<FillEvent> fillRingBuffer) {
+        this.orderBook = new OrderBook((price, volume, bidUserId, askUserId) -> {
+            long fillSequence = fillRingBuffer.next();
+            FillEvent fill = fillRingBuffer.get(fillSequence);
+            fill.set(price, volume, bidUserId, askUserId);
+            fillRingBuffer.publish(fillSequence);
+        });
         thread = new Thread(() -> {
             Sequence orderGatingSequence = new Sequence();
             Sequence instrumentGatingSequence = new Sequence();
-            long orderReadSeq = orderGatingSequence.get();
-            long instrumentSeq = instrumentGatingSequence.get();
+            long orderReadSeq = orderGatingSequence.get() + 1;
+            long instrumentSeq = instrumentGatingSequence.get() + 1;
 
             orderRingBuffer.addGatingSequences(orderGatingSequence);
             instrumentRingBuffer.addGatingSequences(instrumentGatingSequence);
@@ -31,7 +38,7 @@ public class OrderInstrumentProcessor {
                 long orderWriteSeq = orderRingBuffer.getCursor();
                 long instrumentWriteSeq = instrumentRingBuffer.getCursor();
 
-                if (orderReadSeq >= orderWriteSeq && instrumentSeq >= instrumentWriteSeq) {
+                if (orderReadSeq > orderWriteSeq && instrumentSeq > instrumentWriteSeq) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(1); 
                     } catch (InterruptedException e) {
@@ -41,44 +48,45 @@ public class OrderInstrumentProcessor {
                     continue; 
                 }
 
-                while (orderReadSeq < orderWriteSeq) {
+                while (orderReadSeq <= orderWriteSeq) {
                     OrderEvent order = orderRingBuffer.get(orderReadSeq);
+                    // logger.info("Order: {}, {}, {}, {}", order.pric e, order.volume, order.side, orderReadSeq);
                     if (orderReadSeq % 1000000 == 0) {
                         logger.info("Order process count={}", orderReadSeq);
                     }
 
                     // Generate and publish a random FillEvent
-                    long fillSequence = fillRingBuffer.next();
-                    FillEvent fill = fillRingBuffer.get(fillSequence);
-                    fill.set(
-                            random.nextInt(10),
-                            random.nextInt(10),
-                            "User" + random.nextInt(9999),
-                            "User" + random.nextInt(9999)
-                    );
-                    fillRingBuffer.publish(fillSequence);
-
-                    orderReadSeq = orderGatingSequence.incrementAndGet();
+                    // long fillSequence = fillRingBuffer.next();
+                    // FillEvent fill = fillRingBuffer.get(fillSequence);
+                    // fill.set(
+                    //         random.nextInt(10),
+                    //         random.nextInt(10),
+                    //         "User" + random.nextInt(9999),
+                    //         "User" + random.nextInt(9999)
+                    // );
+                    // fillRingBuffer.publish(fillSequence);
+                    orderBook.placeOrder(order);
+                    orderReadSeq = orderGatingSequence.incrementAndGet() + 1;
                 }
 
-                while (instrumentSeq < instrumentWriteSeq) {
+                while (instrumentSeq <= instrumentWriteSeq) {
                     InstrumentEvent instrument = instrumentRingBuffer.get(instrumentSeq);
                     if (instrumentSeq % 1000000 == 0) {
                         logger.info("Instrument process count={}", instrumentSeq);
                     }
 
                     // Generate and publish a random FillEvent
-                    long fillSequence = fillRingBuffer.next();
-                    FillEvent fill = fillRingBuffer.get(fillSequence);
-                    fill.set(
-                            random.nextInt(10),
-                            random.nextInt(10),
-                            "User" + random.nextInt(9999),
-                            "User" + random.nextInt(9999)
-                    );
-                    fillRingBuffer.publish(fillSequence);
+                    // long fillSequence = fillRingBuffer.next();
+                    // FillEvent fill = fillRingBuffer.get(fillSequence);
+                    // fill.set(
+                    //         random.nextInt(10),
+                    //         random.nextInt(10),
+                    //         "User" + random.nextInt(9999),
+                    //         "User" + random.nextInt(9999)
+                    // );
+                    // fillRingBuffer.publish(fillSequence);
 
-                    instrumentSeq = instrumentGatingSequence.incrementAndGet();
+                    instrumentSeq = instrumentGatingSequence.incrementAndGet() + 1;
                 }
             }
         }, "order-instrument-processor");
@@ -102,5 +110,9 @@ public class OrderInstrumentProcessor {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void print() {
+        orderBook.printBook();
     }
 }

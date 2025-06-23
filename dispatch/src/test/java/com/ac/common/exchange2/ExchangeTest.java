@@ -42,7 +42,10 @@ public class ExchangeTest {
         orderEventProducer.start();
         instrumentEventProducer.start();
 
-        Thread.sleep(10000);
+        Thread.sleep(5000); 
+        // stats: 10s 66000000 fills, 33000000 orders, 33000000 instruments, if dummy order instrument processor is used
+
+        orderInstrumentProcessor.print();
 
         // Shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
