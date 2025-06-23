@@ -31,7 +31,7 @@ public class OrderInstrumentProcessor {
                 long orderWriteSeq = orderRingBuffer.getCursor();
                 long instrumentWriteSeq = instrumentRingBuffer.getCursor();
 
-                if (orderReadSeq >= orderWriteSeq && instrumentSeq <= instrumentWriteSeq) {
+                if (orderReadSeq >= orderWriteSeq && instrumentSeq >= instrumentWriteSeq) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(1); 
                     } catch (InterruptedException e) {

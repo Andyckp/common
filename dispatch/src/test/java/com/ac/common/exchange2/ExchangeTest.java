@@ -18,34 +18,28 @@ public class ExchangeTest {
 
     @Test
     public void test() throws InterruptedException {
-        // Create Disruptor instances
         Disruptor<OrderEvent> orderDisruptor = new Disruptor<>(OrderEvent::new, BUFFER_SIZE, Executors.defaultThreadFactory(), ProducerType.SINGLE, new TimeoutBlockingWaitStrategy(100, TimeUnit.MILLISECONDS));
         Disruptor<InstrumentEvent> instrumentDisruptor = new Disruptor<>(InstrumentEvent::new, BUFFER_SIZE, Executors.defaultThreadFactory(), ProducerType.SINGLE, new TimeoutBlockingWaitStrategy(100, TimeUnit.MILLISECONDS));
         Disruptor<FillEvent> fillDisruptor = new Disruptor<>(FillEvent::new, BUFFER_SIZE, (Runnable r) -> new Thread(r, "fill-event-disruptor"), ProducerType.SINGLE, new TimeoutBlockingWaitStrategy(100, TimeUnit.MILLISECONDS));
-
-        // Get ring buffers
+        
         RingBuffer<OrderEvent> orderRingBuffer = orderDisruptor.getRingBuffer();
         RingBuffer<InstrumentEvent> instrumentRingBuffer = instrumentDisruptor.getRingBuffer();
         RingBuffer<FillEvent> fillRingBuffer = fillDisruptor.getRingBuffer();
 
-        // Create single-threaded event processor
         OrderInstrumentProcessor orderInstrumentProcessor = new OrderInstrumentProcessor(orderRingBuffer, instrumentRingBuffer, fillRingBuffer);
-        orderInstrumentProcessor.start();
 
-        // Add FillConsumer directly into the main class
         FillEventConsumer fillEventConsumer = new FillEventConsumer();
         fillDisruptor.handleEventsWith(fillEventConsumer);
+        
+        OrderEventProducer orderEventProducer = new OrderEventProducer(orderRingBuffer);
+        InstrumentEventProducer instrumentEventProducer = new InstrumentEventProducer(instrumentRingBuffer);
 
-        // Start Disruptors
         orderDisruptor.start();
         instrumentDisruptor.start();
         fillDisruptor.start();
 
-        // Start producer threads
-        OrderEventProducer orderEventProducer = new OrderEventProducer(orderRingBuffer);
+        orderInstrumentProcessor.start();
         orderEventProducer.start();
-        
-        InstrumentEventProducer instrumentEventProducer = new InstrumentEventProducer(instrumentRingBuffer);
         instrumentEventProducer.start();
 
         Thread.sleep(10000);
