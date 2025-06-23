@@ -4,15 +4,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.SequenceBarrier;
 import com.lmax.disruptor.TimeoutBlockingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 
 public class ExchangeTest {
-    private static final int BUFFER_SIZE = 1024;
+    private static final Logger logger = LoggerFactory.getLogger(ExchangeTest.class);
+    private static final int BUFFER_SIZE = 4096;
 
     @Test
     public void test() throws InterruptedException {
@@ -26,12 +28,8 @@ public class ExchangeTest {
         RingBuffer<InstrumentEvent> instrumentRingBuffer = instrumentDisruptor.getRingBuffer();
         RingBuffer<FillEvent> fillRingBuffer = fillDisruptor.getRingBuffer();
 
-        // Create sequence barriers
-        SequenceBarrier orderBarrier = orderRingBuffer.newBarrier();
-        SequenceBarrier instrumentBarrier = instrumentRingBuffer.newBarrier();
-
         // Create single-threaded event processor
-        OrderInstrumentProcessor orderInstrumentProcessor = new OrderInstrumentProcessor(orderRingBuffer, instrumentRingBuffer, fillRingBuffer, orderBarrier, instrumentBarrier);
+        OrderInstrumentProcessor orderInstrumentProcessor = new OrderInstrumentProcessor(orderRingBuffer, instrumentRingBuffer, fillRingBuffer);
         orderInstrumentProcessor.start();
 
         // Add FillConsumer directly into the main class

@@ -12,20 +12,24 @@ public class InstrumentEventProducer {
     private final Random random = new Random();
     private final Thread thread;
     private volatile boolean running = false;
+    private int count = 0;
 
     public InstrumentEventProducer(RingBuffer<InstrumentEvent> ringBuffer) {
         this.thread = new Thread(() -> {
         	while (running) {
         	    long sequence = ringBuffer.next();
-        	    try {
+        	    // try {
         	        InstrumentEvent instrument = ringBuffer.get(sequence);
         	        instrument.set("Instrument" + random.nextInt(9999), "Detail" + random.nextInt(9999));
         	        ringBuffer.publish(sequence);
-        	        logger.info("Published InstrumentEvent: " + new String(instrument.instrumentId));
-        	        Thread.sleep(10); 
-        	    } catch (InterruptedException e) {
-        	        Thread.currentThread().interrupt();
-        	    }
+        	        count++;
+                    if (count % 1000000 == 0) {
+                        logger.info("Instrument produce count={}", count);
+                    }
+                    // Thread.sleep(1); 
+        	    // } catch (InterruptedException e) {
+        	    //     Thread.currentThread().interrupt();
+        	    // }
         	}
         }, "instrument-producer");
     }
