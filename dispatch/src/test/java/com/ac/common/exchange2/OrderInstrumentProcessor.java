@@ -32,7 +32,7 @@ public class OrderInstrumentProcessor {
                 try {
                     orderPollerState = orderPoller.poll((e, seq, endOfBatch) -> {
                         if (e != null) {
-                            // logger.info("Order: {}, {}, {}, {}", e.getPrice(), e.getVolume(), e.getSide(), seq);
+                            logger.info("Order: {}, {}, {}, {}", e.getPrice(), e.getVolume(), e.getSide(), seq);
                             if (seq % 1000 == 0) {
                                 logger.info("Order process count={}", seq);
                             }
@@ -95,6 +95,6 @@ public class OrderInstrumentProcessor {
     }
 
     public void print() {
-        orderBook.printBook();
+        // orderBook.printBook();
     }
 }

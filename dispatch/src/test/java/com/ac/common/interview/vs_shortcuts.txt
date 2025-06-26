@@ -109,6 +109,8 @@ cmd shift enter
 delete line:
 shift + cmd + k
 
+join:
+shift j
 ---
 
 go to bracket (start / end back and forward)

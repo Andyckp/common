@@ -10,8 +10,8 @@ public class FillEventConsumer implements EventHandler<FillEvent> {
     
     @Override
     public void onEvent(FillEvent fill, long sequence, boolean endOfBatch) {
-        // logger.info("FillEvent received: price={}, volume={}",
-        //     fill.price, fill.volume);
+        logger.info("FillEvent received: price={}, volume={}",
+            fill.getPrice(), fill.getVolume());
         if (sequence % 1000 == 0) {
             logger.info("FillEvents count={}", sequence);
         }

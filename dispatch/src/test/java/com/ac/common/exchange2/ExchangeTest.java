@@ -17,6 +17,8 @@ public class ExchangeTest {
     private static final int BUFFER_SIZE = 4096;
 
     @Test
+    // TODO there is a bug in the OrderInstrumentProcessor, it does not process orders and instruments correctly
+    // for now, the work is parked. 
     public void test() throws InterruptedException {
         Disruptor<OrderEvent> orderDisruptor = new Disruptor<>(OrderEvent::new, BUFFER_SIZE, Executors.defaultThreadFactory(), ProducerType.SINGLE, new TimeoutBlockingWaitStrategy(100, TimeUnit.MILLISECONDS));
         Disruptor<InstrumentEvent> instrumentDisruptor = new Disruptor<>(InstrumentEvent::new, BUFFER_SIZE, Executors.defaultThreadFactory(), ProducerType.SINGLE, new TimeoutBlockingWaitStrategy(100, TimeUnit.MILLISECONDS));
@@ -46,9 +48,9 @@ public class ExchangeTest {
 
         orderInstrumentProcessor.start();
         orderEventProducer.start();
-        instrumentEventProducer.start();
+        // instrumentEventProducer.start();
 
-        Thread.sleep(10000); 
+        Thread.sleep(1000000); 
         // stats: 10s 66000000 fills, 33000000 orders, 33000000 instruments, if dummy order instrument processor is used
 
         // Shutdown hook

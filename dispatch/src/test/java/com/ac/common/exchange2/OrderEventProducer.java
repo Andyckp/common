@@ -19,13 +19,13 @@ public class OrderEventProducer {
         this.thread = new Thread(() -> {
             int vol = 0;
             // while (running) {
-            for (int i = 0; i<5000; i++) {
+            for (int i = 0; i<105; i++) {
                 long seq = ringBuffer.next();
                 try {
                     OrderEvent order = ringBuffer.get(seq);
                     vol = i % 2 == 0 ? random.nextInt(9) + 1: vol;
                     Side side = i % 2 == 0 ? Side.BID : Side.ASK;
-                    order.set(10000, vol, 
+                    order.set(10000 + i % 4, vol, 
                         padOrTruncate("User" + random.nextInt(9999), 16), 
                         padOrTruncate("Instrument" + random.nextInt(9999), 16), 
                         side);
