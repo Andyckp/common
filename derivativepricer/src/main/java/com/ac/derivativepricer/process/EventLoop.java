@@ -51,9 +51,6 @@ public class EventLoop {
         try {
             return poller.poll((e, seq, eob) -> {
                 if (e != null) {
-                    if (seq % LOGGING_SAMPLE_SIZE == 0) {
-                        logger.info("MessageType={}, count={}", messageType, seq + 1);
-                    }
                     consumer.accept(e);
                     return true;
                 }

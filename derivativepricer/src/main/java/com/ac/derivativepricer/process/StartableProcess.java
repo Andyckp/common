@@ -1,6 +1,6 @@
 package com.ac.derivativepricer.process;
 
-public interface Process {
+public interface StartableProcess {
     void start();
     void stop();
 }

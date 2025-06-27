@@ -149,6 +149,7 @@ cmd d
 
 select all instances of current word
 cmd f2
+cmd shift l
 
 ---
 multi-cursor
@@ -164,3 +165,14 @@ opt shift mouse-drag
 
 * split display
 cmd \
+
+
+---
+
+debug
+
+rerun last test
+cmd ; l
+
+stop test run
+shift f5

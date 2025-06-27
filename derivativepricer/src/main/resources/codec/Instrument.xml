@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="com.ac.derivativepricer.codec"
+                   id="1"
+                   semanticVersion="1.0.0">
+
+    <types>
+        <composite name="messageHeader" description="Message Header">
+            <type name="blockLength" primitiveType="uint16" description="Block Length"/>
+            <type name="templateId" primitiveType="uint16" description="Template ID"/>
+            <type name="schemaId" primitiveType="uint16" description="Schema ID"/>
+            <type name="version" primitiveType="uint16" description="Version"/>
+        </composite>
+
+        <composite name="int64_8" description="Decimal type">
+            <type name="mantissa" primitiveType="int64" description="Mantissa"/>
+            <type name="exponent" primitiveType="int8" description="Exponent"/>
+        </composite>
+
+        <type name="char8" primitiveType="char" length="8" description="Char array of length 8"/>
+        <type name="localDate" primitiveType="uint16" description="Days since Unix epoch (local calendar date)"/>
+
+        <enum name="InstrumentType" encodingType="int32">
+            <validValue name="STOCK">0</validValue>
+            <validValue name="EUROPEAN_CALL">1</validValue>
+            <validValue name="EUROPEAN_PUT">2</validValue>
+            <validValue name="AMERICAN_CALL">3</validValue>
+            <validValue name="AMERICAN_PUT">4</validValue>
+            <validValue name="ASIAN_CALL">5</validValue>
+            <validValue name="ASIAN_PUT">6</validValue>
+        </enum>
+    </types>
+
+    <message name="Instrument" id="2">
+        <field name="messageHeader" id="0" type="messageHeader" description="Standard Message Header"/>
+        <field name="instrumentId" id="1" type="char8" description="Instrument Identifier"/>
+        <field name="underlyingId" id="2" type="char8" description="Underlying Instrument Identifier"/>
+        <field name="strike" id="3" type="int64_8" description="Strike Price"/>
+        <field name="expiry" id="4" type="localDate" description="Expiry Date (days since epoch)"/>
+        <field name="instrumentType" id="5" type="InstrumentType" description="Option or Security Type"/>
+    </message>
+</sbe:messageSchema>
+

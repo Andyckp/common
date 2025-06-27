@@ -1,5 +1,7 @@
 package com.ac.derivativepricer.data;
 
+import static java.lang.System.arraycopy;
+
 import static com.ac.derivativepricer.data.InstrumentEvent.INSTRUMENT_ID_SIZE;
 import static com.ac.derivativepricer.data.StrategyEvent.STRATEGY_ID_SIZE;
 import static com.ac.derivativepricer.data.StrategyEvent.UNDERLYLING_ID_SIZE;
@@ -16,75 +18,97 @@ public class SecondaryGreekEvent {
     private double vanna;
     private double volga;
 
+    public SecondaryGreekEvent set(SecondaryGreekEvent that) {
+        setStrategyId(that.getStrategyId());
+        setUnderlyingId(that.getUnderlyingId());
+        setInstrumentId(that.getInstrumentId());
+        setVega(that.getVega());
+        setReferenceVolatility(that.getReferenceVolatility());
+        setTheta(that.getTheta());
+        setRho(that.getRho());
+        setVanna(that.getVanna());
+        setVolga(that.getVolga());
+        return this;
+    }
+
     public char[] getStrategyId() {
         return strategyId;
     }
 
-    public void setStrategyId(char[] src) {
-        System.arraycopy(src, 0, this.strategyId, 0, Math.min(src.length, STRATEGY_ID_SIZE));
+    public SecondaryGreekEvent setStrategyId(char[] src) {
+        arraycopy(src, 0, this.strategyId, 0, Math.min(src.length, STRATEGY_ID_SIZE));
+        return this;
     }
 
     public char[] getUnderlyingId() {
         return underlyingId;
     }
 
-    public void setUnderlyingId(char[] src) {
-        System.arraycopy(src, 0, this.underlyingId, 0, Math.min(src.length, UNDERLYLING_ID_SIZE));
+    public SecondaryGreekEvent setUnderlyingId(char[] src) {
+        arraycopy(src, 0, this.underlyingId, 0, Math.min(src.length, UNDERLYLING_ID_SIZE));
+        return this;
     }
 
     public char[] getInstrumentId() {
         return instrumentId;
     }
 
-    public void setInstrumentId(char[] src) {
-        System.arraycopy(src, 0, this.instrumentId, 0, Math.min(src.length, INSTRUMENT_ID_SIZE));
+    public SecondaryGreekEvent setInstrumentId(char[] src) {
+        arraycopy(src, 0, this.instrumentId, 0, Math.min(src.length, INSTRUMENT_ID_SIZE));
+        return this;
     }
 
     public double getVega() {
         return vega;
     }
 
-    public void setVega(double vega) {
+    public SecondaryGreekEvent setVega(double vega) {
         this.vega = vega;
+        return this;
     }
 
     public double getReferenceVolatility() {
         return referenceVolatility;
     }
 
-    public void setReferenceVolatility(double referenceVolatility) {
+    public SecondaryGreekEvent setReferenceVolatility(double referenceVolatility) {
         this.referenceVolatility = referenceVolatility;
+        return this;
     }
 
     public double getTheta() {
         return theta;
     }
 
-    public void setTheta(double theta) {
+    public SecondaryGreekEvent setTheta(double theta) {
         this.theta = theta;
+        return this;
     }
 
     public double getRho() {
         return rho;
     }
 
-    public void setRho(double rho) {
+    public SecondaryGreekEvent setRho(double rho) {
         this.rho = rho;
+        return this;
     }
 
     public double getVanna() {
         return vanna;
     }
 
-    public void setVanna(double vanna) {
+    public SecondaryGreekEvent setVanna(double vanna) {
         this.vanna = vanna;
+        return this;
     }
 
     public double getVolga() {
         return volga;
     }
 
-    public void setVolga(double volga) {
+    public SecondaryGreekEvent setVolga(double volga) {
         this.volga = volga;
+        return this;
     }
 }

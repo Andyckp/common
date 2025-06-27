@@ -1,18 +1,22 @@
 package com.ac.common.aeron;
 
+import java.nio.ByteBuffer;
+
+import org.agrona.concurrent.IdleStrategy;
+import org.agrona.concurrent.SleepingIdleStrategy;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.junit.jupiter.api.Test;
+
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import io.aeron.Subscription;
 import io.aeron.driver.MediaDriver;
 import io.aeron.logbuffer.FragmentHandler;
-import org.agrona.concurrent.IdleStrategy;
-import org.agrona.concurrent.SleepingIdleStrategy;
-import org.agrona.concurrent.UnsafeBuffer;
-
-import java.nio.ByteBuffer;
 
 public class SimpleAeronTest {
-    public static void main(String[] args)
+    // public static void main(String[] args)
+    @Test
+    public void test()
     {
         final String channel = "aeron:ipc";
         final String message = "my message";

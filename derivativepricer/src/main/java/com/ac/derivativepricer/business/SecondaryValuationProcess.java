@@ -11,23 +11,24 @@ import com.ac.derivativepricer.data.StrategyEvent;
 import com.lmax.disruptor.RingBuffer;
 
 public class SecondaryValuationProcess extends ValuationProcess<SecondaryGreekEvent> {
+
     public static final Logger logger = LoggerFactory.getLogger(SecondaryGreekEvent.class);
-    
+
     public SecondaryValuationProcess(
             RingBuffer<InstrumentEvent> instrumentRb,
             RingBuffer<StrategyEvent> strategyRb,
             RingBuffer<ExpiryVolatilityEvent> volatilityRb,
-            RingBuffer<MarketDataEvent> marketDataRb, 
+            RingBuffer<MarketDataEvent> marketDataRb,
             RingBuffer<SecondaryGreekEvent> secondaryGreekRb) {
         super(instrumentRb, strategyRb, volatilityRb, marketDataRb, secondaryGreekRb, SecondaryGreekEvent.class.getSimpleName(), logger);
     }
 
     @Override
-    protected void publishRandom() {
+    protected void publishRandom(char[] strategyId, char[] instrumentId, char[] underlyingId, char[] volatilityId, char[] marketDataId) {
         greekRb.publishEvent((SecondaryGreekEvent event, long sequence) -> {
-            event.setStrategyId("strat 1".toCharArray());
-            event.setInstrumentId("inst 1".toCharArray());
-            event.setUnderlyingId("ul 1".toCharArray());
+            event.setStrategyId(strategyId);
+            event.setInstrumentId(instrumentId);
+            event.setUnderlyingId(underlyingId);
             event.setVega(rand.nextDouble());
             event.setReferenceVolatility(rand.nextDouble());
             event.setTheta(rand.nextDouble());

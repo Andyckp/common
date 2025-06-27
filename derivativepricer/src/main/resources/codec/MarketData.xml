@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="com.ac.derivativepricer.codec"
+                   id="1"
+                   semanticVersion="1.0.0">
+
+    <types>
+        <composite name="messageHeader" description="Message Header">
+            <type name="blockLength" primitiveType="uint16" description="Block Length"/>
+            <type name="templateId" primitiveType="uint16" description="Template ID"/>
+            <type name="schemaId" primitiveType="uint16" description="Schema ID"/>
+            <type name="version" primitiveType="uint16" description="Version"/>
+        </composite>
+
+        <composite name="int64_8" description="Decimal type">
+            <type name="mantissa" primitiveType="int64" description="Mantissa"/>
+            <type name="exponent" primitiveType="int8" description="Exponent"/>
+        </composite>
+
+        <type name="char8" primitiveType="char" length="8" description="Char array of length 8"/>
+    </types>
+
+    <message name="MarketData" id="1">
+        <field name="messageHeader" id="0" type="messageHeader" description="Standard Message Header"/>
+        <field name="marketDataId" id="1" type="char8" description="Market Data Identifier"/>
+        <field name="price" id="2" type="int64_8" description="Market Price"/>
+    </message>
+</sbe:messageSchema>

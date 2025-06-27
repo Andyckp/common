@@ -24,11 +24,12 @@ public class PrimaryValuationProcess extends ValuationProcess<PrimaryGreekEvent>
     }
 
     @Override
-    protected void publishRandom() {
+    protected void publishRandom(char[] strategyId, char[] instrumentId, char[] underlyingId, char[] volatilityId, char[] marketDataId) {
         greekRb.publishEvent((PrimaryGreekEvent event, long sequence) -> {
-            event.setStrategyId("strat 1".toCharArray());
-            event.setInstrumentId("inst 1".toCharArray());
-            event.setUnderlyingId("ul 1".toCharArray());
+            event.setStrategyId(strategyId);
+            event.setInstrumentId(instrumentId);
+            event.setUnderlyingId(underlyingId);
+            event.setReferenceMarketDataId(marketDataId);
             event.setTheo(rand.nextDouble());
             event.setDelta(rand.nextDouble());
             event.setGamma(rand.nextDouble());
