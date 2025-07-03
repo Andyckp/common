@@ -1,5 +1,12 @@
 package com.ac.derivativepricer;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ac.derivativepricer.adaptor.AeronManager;
 import com.ac.derivativepricer.adaptor.input.ExpiryVolatilityAdaptor;
 import com.ac.derivativepricer.adaptor.input.InstrumentAdaptor;
@@ -13,6 +20,8 @@ import io.aeron.Aeron;
 import io.aeron.archive.client.AeronArchive;
 
 public class ApplicationBuilder {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationBuilder.class);
 
     public ApplicationBuilder(AeronManager aeronManager) {
         this.aeronManager = aeronManager;
@@ -58,6 +67,8 @@ public class ApplicationBuilder {
         instrumentAdaptor.start();
         expiryVolatilityAdaptor.start();
         marketDataAdaptor.start();
+
+        printThreadDump();
     }
 
     public void stop() {
@@ -73,5 +84,15 @@ public class ApplicationBuilder {
         adjustedGreekAdaptor.stop();
         
         aeronManager.stop();
+    }
+
+    public static void printThreadDump() {
+        ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] threadInfos = threadMxBean.dumpAllThreads(true, true);
+
+        logger.info("=== THREAD DUMP ===");
+        for (ThreadInfo threadInfo : threadInfos) {
+            logger.info("{}", threadInfo);
+        }
     }
 }

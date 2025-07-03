@@ -3,6 +3,7 @@ package com.ac.derivativepricer.business;
 import java.time.Instant;
 import static java.time.Instant.now;
 import java.time.LocalDate;
+import java.util.Arrays;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import java.util.HashMap;
@@ -54,16 +55,24 @@ public abstract class ValuationProcess<T> implements StartableProcess {
     // recalculation
     private final Set<CharArrayKey> strategyIdOfRecalculation = new LinkedHashSet<>(); // sorted according to insertion order
 
+    // partition
+    private final int partitionId;
+    private final int partitionCount;
+
     public ValuationProcess(
             RingBuffer<InstrumentEvent> instrumentRb,
             RingBuffer<StrategyEvent> strategyRb,
             RingBuffer<ExpiryVolatilityEvent> volatilityRb,
             RingBuffer<MarketDataEvent> marketDataRb,
-            RingBuffer<T> greekRb,
+            RingBuffer<T> greekRb, 
+            int partitionId, 
+            int partitionCount,
             String processName,
             Logger logger) {
 
         this.greekRb = greekRb;
+        this.partitionCount = partitionCount;
+        this.partitionId = partitionId;
         EventPoller<InstrumentEvent> instrumentPoller = instrumentRb.newPoller();
         EventPoller<StrategyEvent> strategyPoller = strategyRb.newPoller();
         EventPoller<ExpiryVolatilityEvent> volatilityPoller = volatilityRb.newPoller();
@@ -87,7 +96,7 @@ public abstract class ValuationProcess<T> implements StartableProcess {
                     && PROCESSING != marketDataPollerState) {
                 idleStrategy.idle();
             }
-        }, processName, logger);
+        }, processName + "-" + partitionId, logger);
     }
 
     @Override
@@ -101,6 +110,10 @@ public abstract class ValuationProcess<T> implements StartableProcess {
     }
 
     public void onStrategy(StrategyEvent src) {
+        if (Arrays.hashCode(src.getUnderlyingId()) % partitionCount == partitionId) {
+            return;
+        }
+
         CharArrayKey strategyKey = new CharArrayKey(src.getStrategyId());
         CharArrayKey underlyingKey = new CharArrayKey(src.getUnderlyingId());
         CharArrayKey volatilityKey = new CharArrayKey(src.getVolatilityId());
@@ -118,6 +131,9 @@ public abstract class ValuationProcess<T> implements StartableProcess {
     }
 
     public void onInstrument(InstrumentEvent src) {
+        if (Arrays.hashCode(src.getUnderlyingId()) % partitionCount == partitionId) {
+            return;
+        }
         CharArrayKey instrumentKey = new CharArrayKey(src.getInstrumentId());
         CharArrayKey underlyingKey = new CharArrayKey(src.getUnderlyingId());
 

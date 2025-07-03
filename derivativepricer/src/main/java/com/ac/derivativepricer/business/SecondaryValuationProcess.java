@@ -19,8 +19,10 @@ public class SecondaryValuationProcess extends ValuationProcess<SecondaryGreekEv
             RingBuffer<StrategyEvent> strategyRb,
             RingBuffer<ExpiryVolatilityEvent> volatilityRb,
             RingBuffer<MarketDataEvent> marketDataRb,
-            RingBuffer<SecondaryGreekEvent> secondaryGreekRb) {
-        super(instrumentRb, strategyRb, volatilityRb, marketDataRb, secondaryGreekRb, SecondaryGreekEvent.class.getSimpleName(), logger);
+            RingBuffer<SecondaryGreekEvent> secondaryGreekRb,
+            int partitionId, 
+            int partitionCount) {
+        super(instrumentRb, strategyRb, volatilityRb, marketDataRb, secondaryGreekRb, partitionId, partitionCount, SecondaryGreekEvent.class.getSimpleName(), logger);
     }
 
     @Override
