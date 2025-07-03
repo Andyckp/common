@@ -1,15 +1,5 @@
 package com.ac.common.aeron.tradeandposition;
 
-import com.ac.common.sbe.TradeDecoder;
-import com.ac.common.sbe.TradeEncoder;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
-import io.aeron.Aeron;
-import io.aeron.ChannelUri;
-import io.aeron.Subscription;
-import io.aeron.archive.client.AeronArchive;
-import io.aeron.archive.client.RecordingDescriptorConsumer;
-import io.aeron.logbuffer.Header;
 import org.agrona.CloseHelper;
 import org.agrona.DirectBuffer;
 import org.agrona.collections.MutableLong;
@@ -20,6 +10,17 @@ import org.slf4j.LoggerFactory;
 
 import static com.ac.common.aeron.tradeandposition.DisruptorBuilder.buildPositionDisruptor;
 import static com.ac.common.aeron.tradeandposition.DisruptorBuilder.buildTradeDisruptor;
+import com.ac.common.sbe.TradeDecoder;
+import com.ac.common.sbe.TradeEncoder;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+
+import io.aeron.Aeron;
+import io.aeron.ChannelUri;
+import io.aeron.Subscription;
+import io.aeron.archive.client.AeronArchive;
+import io.aeron.archive.client.RecordingDescriptorConsumer;
+import io.aeron.logbuffer.Header;
 
 public class PositionProcessApplication {
     private static final Logger logger = LoggerFactory.getLogger(PositionProcessApplication.class);

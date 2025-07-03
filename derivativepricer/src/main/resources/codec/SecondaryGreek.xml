@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="com.ac.derivativepricer.codec"
+                   id="1"
+                   semanticVersion="1.0.0">
+
+    <types>
+        <composite name="messageHeader" description="Message Header">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="int64_8" description="Decimal type">
+            <type name="mantissa" primitiveType="int64"/>
+            <type name="exponent" primitiveType="int8"/>
+        </composite>
+
+        <type name="char8" primitiveType="char" length="8" description="Char array of length 8"/>
+    </types>
+
+    <message name="SecondaryGreek" id="6">
+        <field name="messageHeader" id="0" type="messageHeader" description="Standard Message Header"/>
+        <field name="strategyId" id="1" type="char8" description="Strategy Identifier"/>
+        <field name="underlyingId" id="2" type="char8" description="Underlying Instrument Identifier"/>
+        <field name="instrumentId" id="3" type="char8" description="Instrument Identifier"/>
+        <field name="vega" id="4" type="int64_8" description="Vega Sensitivity"/>
+        <field name="referenceVolatility" id="5" type="int64_8" description="Reference Volatility"/>
+        <field name="theta" id="6" type="int64_8" description="Theta Sensitivity"/>
+        <field name="rho" id="7" type="int64_8" description="Rho Sensitivity"/>
+        <field name="vanna" id="8" type="int64_8" description="Vanna"/>
+        <field name="volga" id="9" type="int64_8" description="Volga"/>
+    </message>
+</sbe:messageSchema>

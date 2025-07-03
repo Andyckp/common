@@ -10,6 +10,7 @@
     <modules>
         <module>aeron</module>
         <module>dispatch</module>
+        <module>derivativepricer</module>
     </modules>
     <build>
         <plugins>

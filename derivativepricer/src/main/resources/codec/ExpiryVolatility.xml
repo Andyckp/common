@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="com.ac.derivativepricer.codec"
+                   id="1"
+                   semanticVersion="1.0.0">
+
+    <types>
+        <composite name="messageHeader" description="Message Header">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="int64_8" description="Decimal type">
+            <type name="mantissa" primitiveType="int64"/>
+            <type name="exponent" primitiveType="int8"/>
+        </composite>
+
+        <type name="char8" primitiveType="char" length="8" description="Char array of length 8"/>
+        <type name="localDate" primitiveType="uint16" description="Days since Unix epoch (local calendar date)"/>
+    </types>
+
+    <message name="ExpiryVolatility" id="4">
+        <field name="messageHeader" id="0" type="messageHeader" description="Standard Message Header"/>
+        <field name="volatilityId" id="1" type="char8" description="Volatility Identifier"/>
+        <field name="expiry" id="2" type="localDate" description="Expiry in local calendar days since epoch"/>
+        <field name="fittingReference" id="3" type="int64_8" description="Reference point for curve fitting"/>
+
+        <!-- Volatility curve parameters -->
+        <field name="parameter1" id="4" type="int64_8"/>
+        <field name="parameter2" id="5" type="int64_8"/>
+        <field name="parameter3" id="6" type="int64_8"/>
+        <field name="parameter4" id="7" type="int64_8"/>
+        <field name="parameter5" id="8" type="int64_8"/>
+        <field name="parameter6" id="9" type="int64_8"/>
+        <field name="parameter7" id="10" type="int64_8"/>
+        <field name="parameter8" id="11" type="int64_8"/>
+        <field name="parameter9" id="12" type="int64_8"/>
+        <field name="parameter10" id="13" type="int64_8"/>
+        <field name="parameter11" id="14" type="int64_8"/>
+        <field name="parameter12" id="15" type="int64_8"/>
+        <field name="parameter13" id="16" type="int64_8"/>
+        <field name="parameter14" id="17" type="int64_8"/>
+        <field name="parameter15" id="18" type="int64_8"/>
+        <field name="parameter16" id="19" type="int64_8"/>
+    </message>
+</sbe:messageSchema>

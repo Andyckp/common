@@ -1,20 +1,20 @@
 package com.ac.common.aeron.tradeandposition;
 
-import com.ac.common.sbe.TradeEncoder;
-import io.aeron.Aeron;
-import io.aeron.ExclusivePublication;
-import io.aeron.archive.client.AeronArchive;
-import io.aeron.archive.codecs.SourceLocation;
-import io.aeron.archive.status.RecordingPos;
+import java.nio.ByteBuffer;
+
 import org.agrona.CloseHelper;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.SleepingIdleStrategy;
 import org.agrona.concurrent.UnsafeBuffer;
-import org.agrona.concurrent.status.CountersReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
+import com.ac.common.sbe.TradeEncoder;
+
+import io.aeron.Aeron;
+import io.aeron.ExclusivePublication;
+import io.aeron.archive.client.AeronArchive;
+import io.aeron.archive.codecs.SourceLocation;
 
 public class TradeTestPublisher {
     private static final Logger logger = LoggerFactory.getLogger(TradeTestPublisher.class);
