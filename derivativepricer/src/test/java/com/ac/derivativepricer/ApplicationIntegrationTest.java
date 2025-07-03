@@ -25,6 +25,20 @@ public class ApplicationIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationIntegrationTest.class);
 
+    // counters
+    private final GreekIdConsumer primaryGreekIdConsumer = mock(GreekIdConsumer.class);
+    private final GreekIdConsumer secondaryGreekIdConsumer = mock(GreekIdConsumer.class);
+    private final GreekIdConsumer adjustedGreekIdConsumer = mock(GreekIdConsumer.class);
+    private ArgumentCaptor<String> primaryStratCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> primaryUlCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> primaryInstrCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> secondaryStratCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> secondaryUlCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> secondaryInstrCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> adjustedStratCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> adjustedUlCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> adjustedInstrCaptor = ArgumentCaptor.forClass(String.class);
+
     @Test
     public void GIVEN_pricer_started_WHEN_market_data_update_WHEN_volatility_update_THEN_dependent_instruments_of_new_greeks_published() throws InterruptedException {
         // given aeron
@@ -53,34 +67,19 @@ public class ApplicationIntegrationTest {
         Thread.sleep(3000); // application start up and publish archive
 
         // given test output consumer
-        GreekIdConsumer primaryGreekIdConsumer = mock(GreekIdConsumer.class);
         PrimaryGreekAeronConsumer primaryGreekAeronConsumer = new PrimaryGreekAeronConsumer(aeronManager.getAeronArchive(), primaryGreekIdConsumer);
         primaryGreekAeronConsumer.start();
 
-        GreekIdConsumer secondaryGreekIdConsumer = mock(GreekIdConsumer.class);
         SecondaryGreekAeronConsumer secondaryreekAeronConsumer = new SecondaryGreekAeronConsumer(aeronManager.getAeronArchive(), secondaryGreekIdConsumer);
         secondaryreekAeronConsumer.start();
 
-        GreekIdConsumer adjustedGreekIdConsumer = mock(GreekIdConsumer.class);
         AdjustedGreekAeronConsumer adjustedGreekAeronConsumer = new AdjustedGreekAeronConsumer(aeronManager.getAeronArchive(), adjustedGreekIdConsumer);
         adjustedGreekAeronConsumer.start();
 
         Thread.sleep(2000); // test consumer start up and read all archives
 
         // when - market data (MD-1, MD-2) for 2 underlyings (UL-1, UL-2) of 2 strategies
-        reset(primaryGreekIdConsumer);
-        reset(secondaryGreekIdConsumer);
-        reset(adjustedGreekIdConsumer);
-        ArgumentCaptor<String> primaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> primaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> primaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> secondaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> secondaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> secondaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> adjustedStratCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> adjustedUlCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> adjustedInstrCaptor = ArgumentCaptor.forClass(String.class);
-        
+        resetCounters();
         marketDataAeronProducer.write(1);
         marketDataAeronProducer.write(2);
 
@@ -104,21 +103,9 @@ public class ApplicationIntegrationTest {
         assertResultDistribution(adjustedStratCaptor, adjustedUlCaptor, adjustedInstrCaptor, 6, 6, 6, 6, 12, 12, 4, 4, 4, 4, 4, 4);
 
         // when market data (MD-2) for 1 underlying (UL-2) of 2 strategies
-        reset(primaryGreekIdConsumer);
-        reset(secondaryGreekIdConsumer);
-        reset(adjustedGreekIdConsumer);
-        primaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        primaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        primaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedStratCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedUlCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedInstrCaptor = ArgumentCaptor.forClass(String.class);
-        
+        resetCounters();
         marketDataAeronProducer.write(2);
-        
+
         // then 6, 6, 12 results
         // 2 strategies x 1 underlyings x 3 instruments per each underlying = 6 results
         verify(primaryGreekIdConsumer, timeout(2000).times(6)).consume(
@@ -139,21 +126,9 @@ public class ApplicationIntegrationTest {
         assertResultDistribution(adjustedStratCaptor, adjustedUlCaptor, adjustedInstrCaptor, 0, 0, 6, 6, 0, 12, 0, 0, 0, 4, 4, 4);
 
         // when volatility (Vol-1) for 1 underlying (UL-1) of 2 strategies
-        reset(primaryGreekIdConsumer);
-        reset(secondaryGreekIdConsumer);
-        reset(adjustedGreekIdConsumer);
-        primaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        primaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        primaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryStratCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryUlCaptor = ArgumentCaptor.forClass(String.class);
-        secondaryInstrCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedStratCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedUlCaptor = ArgumentCaptor.forClass(String.class);
-        adjustedInstrCaptor = ArgumentCaptor.forClass(String.class);
-        
+        resetCounters();
         volatilityAeronProducer.write1Expiry(1);
-        
+
         // then 6, 6, 12 results
         // 2 strategies x 1 underlyings x 3 instruments per each underlying = 6 results
         verify(primaryGreekIdConsumer, timeout(2000).times(6)).consume(
@@ -199,5 +174,20 @@ public class ApplicationIntegrationTest {
         assertEquals(i_2_1, instrCaptor.getAllValues().stream().filter(i -> "I-2-1".equals(i)).count());
         assertEquals(i_2_2, instrCaptor.getAllValues().stream().filter(i -> "I-2-2".equals(i)).count());
         assertEquals(i_2_3, instrCaptor.getAllValues().stream().filter(i -> "I-2-3".equals(i)).count());
+    }
+
+    private void resetCounters() {
+        reset(primaryGreekIdConsumer);
+        reset(secondaryGreekIdConsumer);
+        reset(adjustedGreekIdConsumer);
+        primaryStratCaptor = ArgumentCaptor.forClass(String.class);
+        primaryUlCaptor = ArgumentCaptor.forClass(String.class);
+        primaryInstrCaptor = ArgumentCaptor.forClass(String.class);
+        secondaryStratCaptor = ArgumentCaptor.forClass(String.class);
+        secondaryUlCaptor = ArgumentCaptor.forClass(String.class);
+        secondaryInstrCaptor = ArgumentCaptor.forClass(String.class);
+        adjustedStratCaptor = ArgumentCaptor.forClass(String.class);
+        adjustedUlCaptor = ArgumentCaptor.forClass(String.class);
+        adjustedInstrCaptor = ArgumentCaptor.forClass(String.class);
     }
 }
