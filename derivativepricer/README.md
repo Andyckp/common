@@ -52,7 +52,7 @@ Each instrument can have different greeks per strategy, based on its assigned vo
 
 ## Integration Test
 
-This is the best entry point to explore the system: ApplicationIntegrationTest.java](https://github.com/Andyckp/common/blob/master/derivativepricer/src/test/java/com/ac/derivativepricer/ApplicationIntegrationTest.java)  
+This is the best entry point to explore the system: [ApplicationIntegrationTest.java](https://github.com/Andyckp/common/blob/master/derivativepricer/src/test/java/com/ac/derivativepricer/ApplicationIntegrationTest.java)  
 - Starts the application  
 - Publishes market data and verifies only dependent instruments' greeks are published  
 - Publishes volatility and verifies correct downstream propagation
