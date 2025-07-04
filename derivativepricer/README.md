@@ -81,6 +81,7 @@ This is the best entry point to explore the system: [ApplicationIntegrationTest.
 
 ### Performance
 
+- Implement shared memory backed ringbuffers such that valuation units can be hosted as different operating system processes such that they are be restarted individually
 - Use `int` instead of `LocalDate` in business processes 
 - Reuse `char[]` from `CharArrayKey` in business processes
 - Use padding to avoid false sharing  
