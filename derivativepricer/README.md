@@ -66,7 +66,7 @@ This is the best entry point to explore the system: [ApplicationIntegrationTest.
 - [SBE codec](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/codec)
 
 ## Uses
-- The codes acts as the architectural pattern to build a reactive enterprise system. 
+- The codes act as the architectural pattern to build a reactive enterprise system. 
 - The quantative library is not yet fitted in but can be fitted in straight forward way. Input data like dividends, yield curves and borrow curves can be incorporated by adding adaptors.
 
 ## Next Steps
