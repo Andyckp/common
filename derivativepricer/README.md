@@ -26,13 +26,10 @@ An event-driven system for real-time derivative pricing.
   Thread-safe, preallocated buffers for inter-process communication without object allocation.
 
 - **Multi-Partitioned Primary Greek Valuation**  
-  Performs CPU-intensive theo, delta, and gamma calculations via a quantitative library.  
-  Workloads are partitioned by `underlying_id`, each handled by a dedicated thread for horizontal scaling.  
-  Rapid input ticks are conflated to compute once per burst, optimizing throughput during peak hours.  
-  Primary greeks are multicasted to downstream applications via Aeron and cascaded to the adjustment process via ringbuffer.
+  Performs CPU-intensive theo, delta, and gamma calculations by invoking a quantitative library, handling major greeks only for fast responses to Client. The system partitions workloads by underlying ID, assigning each partition to a dedicated thread to achieve horizontal scaling. Merges rapid input ticks to compute once per burst, optimizing throughput during peak hours. Primary greeks are multicasted to downstream applications via Aeron and cascaded to the adjustment process via ringbuffer.
 
 - **Multi-Partitioned Secondary Greek Valuation**  
-  Handles all other greeks using the same partitioning and conflation strategy as primary valuation.
+  Performs CPU-intensive computations by invoking a quantitative library, handling all other greeks. The system partitions workloads by underlying ID, assigning each partition to a dedicated thread to achieve horizontal scaling. Merges rapid input ticks to compute once per burst, optimizing throughput during peak hours.
 
 - **Adjusted Theo Valuation**  
   Reacts to market data and cached primary greeks to compute fast theo via delta-gamma adjustment.
