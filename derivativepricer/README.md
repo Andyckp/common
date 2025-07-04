@@ -1,6 +1,6 @@
 # Derivative Pricer 
 
-An event-driven system for real-time derivative pricing.
+An event-driven system for real-time derivative pricing. 
 
 ## Key Features
 
@@ -52,12 +52,10 @@ Each instrument can have different greeks per strategy, based on its assigned vo
 
 ## Integration Test
 
-This is the best entry point to explore the system:
-
-- [ApplicationIntegrationTest.java](https://github.com/Andyckp/common/blob/master/derivativepricer/src/test/java/com/ac/derivativepricer/ApplicationIntegrationTest.java)  
-  - Starts the application  
-  - Publishes market data and verifies only dependent instruments' greeks are published  
-  - Publishes volatility and verifies correct downstream propagation
+This is the best entry point to explore the system: ApplicationIntegrationTest.java](https://github.com/Andyckp/common/blob/master/derivativepricer/src/test/java/com/ac/derivativepricer/ApplicationIntegrationTest.java)  
+- Starts the application  
+- Publishes market data and verifies only dependent instruments' greeks are published  
+- Publishes volatility and verifies correct downstream propagation
 
 ## Main Classes Overview
 - [adaptor](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/adaptor)
@@ -66,6 +64,10 @@ This is the best entry point to explore the system:
 
 - [data structure](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/data)
 - [SBE codec](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/codec)
+
+## Uses
+- The codes acts as the architectural pattern to build a reactive enterprise system. 
+- The quantative library is not yet fitted in but can be fitted in straight forward way. Input data like dividends, yield curves and borrow curves can be incorporated by adding adaptors.
 
 ## Next Steps
 
