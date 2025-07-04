@@ -1,3 +1,34 @@
+# Derivative Pricer 
+
+An event-driven system for real-time derivative pricing. 
+
+## Key Features
+
+- **Reactive**  
+  Responds to market data and volatility surface updates, repricing only dependent instruments.
+
+- **Low Latency**  
+  Built for speed using [Aeron](https://github.com/real-logic/aeron) for transport and [SBE](https://github.com/real-logic/simple-binary-encoding) for compact binary encoding.
+
+- **Low-GC Design**  
+  Object reuse and preallocated buffers ensure minimal garbage collection and consistent performance.
+
+## Topology
+
+![Component Diagram](https://github.com/Andyckp/common/blob/master/derivativepricer/derivativepricer.drawio.svg)
+
+### Components
+
+- **Aeron and SBE Input/Output Adaptors**  
+- **Ringbuffers**  
+- **Multi-Partitioned Primary Greek Valuation**  
+- **Multi-Partitioned Secondary Greek Valuation**  
+- **Adjusted Theo Valuation**  
+
+For details, please go to [derivative-pricer](https://github.com/Andyckp/common/tree/derivative-pricer-2/derivativepricer)
+
+---  
+
 # Common Java Libraries  
 
 ## Overview  
