@@ -16,7 +16,7 @@ An event-driven system for real-time derivative pricing.
 ## Topology
 
 Below is the component design:  
-[Diagram](https://github.com/Andyckp/common/blob/master/derivativepricer/derivativepricer.drawio.svg)
+![Component Diagram](https://github.com/Andyckp/common/blob/master/derivativepricer/derivativepricer.drawio.svg)
 
 ### Components
 
