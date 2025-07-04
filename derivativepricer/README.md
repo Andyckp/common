@@ -1,4 +1,4 @@
-# Derivative Pricer Framework
+# Derivative Pricer 
 
 An event-driven system for real-time derivative pricing.
 
@@ -15,7 +15,6 @@ An event-driven system for real-time derivative pricing.
 
 ## Topology
 
-Below is the component design:  
 ![Component Diagram](https://github.com/Andyckp/common/blob/master/derivativepricer/derivativepricer.drawio.svg)
 
 ### Components
@@ -50,9 +49,9 @@ Each instrument can have different greeks per strategy, based on its assigned vo
 
 ## Output Data Overview
 
-- **Primary Greeks**: Major greeks (theo, delta, gamma) for fast response.
-- **Secondary Greeks**: Other greeks calculated by the quantitative library.
-- **Adjusted Greeks**: Fast theo via delta-gamma adjustment on market data changes.
+- **Primary Greeks**: Contains major greeks (theo, delta, gamma) for fast response.
+- **Secondary Greeks**: Contains Other greeks calculated by the quantitative library.
+- **Adjusted Greeks**: Very fast theo via delta-gamma adjustment on market data changes.
 
 ## Integration Test
 
@@ -64,30 +63,25 @@ This is the best entry point to explore the system:
   - Publishes volatility and verifies correct downstream propagation
 
 ## Main Classes Overview
+- [adaptor](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/adaptor)
 
-- **Adaptors**  
-  https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/adaptor
+- [process](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/business)
 
-- **Business Processes**  
-  https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/business
-
-- **Data Structures & SBE Codecs**  
-  https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/data  
-  https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/codec
+- [data structure](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/data)
+- [SBE codec](https://github.com/Andyckp/common/tree/master/derivativepricer/src/main/java/com/ac/derivativepricer/codec)
 
 ## Next Steps
-
-### Performance
-
-- Use `int` instead of `LocalDate` internally  
-- Reuse `char[]` from `CharArrayKey`  
-- Use padding to avoid false sharing  
-- Data partitioning (done)
 
 ### Implementation
 
 - Add sequence number in SBE schema  
-- Subscribe to capture stream after replay stream finishes  
+- Subscribe to capture stream only after replay stream finishes  
 - Use separate Aeron managers for main and test environments  
-- (Minor) Implement delta-gamma adjustment  
-- (Minor) Support dynamic remapping of strategy-to-market data and volatility IDs at runtime
+- Implement delta-gamma adjustment  
+- Support remapping of strategy to market data and to volatility at runtime
+
+### Performance
+
+- Use `int` instead of `LocalDate` in business processes 
+- Reuse `char[]` from `CharArrayKey` in business processes
+- Use padding to avoid false sharing  
