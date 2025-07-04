@@ -25,7 +25,7 @@ An event-driven system for real-time derivative pricing.
 - **Multi-Partitioned Secondary Greek Valuation**  
 - **Adjusted Theo Valuation**  
 
-For details, please go to [derivative-pricer](https://github.com/Andyckp/common/tree/derivative-pricer-2/derivativepricer)
+For details, please go to [derivative-pricer](https://github.com/Andyckp/common/tree/master/derivativepricer)
 
 ---  
 
